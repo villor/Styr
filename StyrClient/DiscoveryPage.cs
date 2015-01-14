@@ -14,42 +14,64 @@ namespace StyrClient
 		enum PacketType : byte
 		{
 			Discovery,
-			Offer
+			Offer,
+			ConnectionReq,
+			ConnectionAck,
+			AccessDenied
 		}
 
-		struct StyrServer {
-			public string IP { get; set;}
+		struct StyrServer
+		{
+			public string IP { get; set; }
 		}
 
 		//Class members
 		List<StyrServer> _availList = new List<StyrServer> ();
 
-		public DiscoveryPage()
+		public DiscoveryPage ()
 		{
 			BuildPageGUI ();
 			DiscoverHosts ();
 		}
 
-		public void BuildPageGUI(){
+		public void BuildPageGUI ()
+		{
 			Title = "Available Hosts";
+
+			var listView = new ListView {
+
+				ItemsSource = _availList,
+				ItemTemplate = new DataTemplate (typeof(TextCell)),
+			};
+			listView.ItemTemplate.SetBinding (TextCell.TextProperty, "IP");
+
+			listView.ItemTapped += async (sender, e) => {
+				var serverItem = (StyrServer)e.Item;
+
+				IPAddress desiredHost = IPAddress.Parse (serverItem.IP);
+				IPEndPoint desiredEndPoint = new IPEndPoint (desiredHost, 1337);
+				byte[] packet = { (byte)PacketType.ConnectionReq };
+				UdpClient udpClient = new UdpClient ();
+				udpClient.Send (packet, packet.Length, desiredEndPoint);
+				Debug.WriteLine ("Sending ConnectionReq to {0}", desiredHost);
+
+				byte[] receivedPacket = udpClient.Receive (ref desiredEndPoint);
+				if (receivedPacket.Length != 0) {
+					if (receivedPacket [0] == (byte)PacketType.ConnectionAck) {
+						Debug.WriteLine ("Connection request accepted by {0}", desiredEndPoint.Address);
+						var mainRemotePage = new MainRemotePage (desiredEndPoint, udpClient);
+						await Navigation.PushAsync (mainRemotePage);
+					}else if (receivedPacket [0] == (byte)PacketType.AccessDenied){
+						await DisplayAlert("Access Denied", "Connection to " + desiredHost + " failed", "OK");
+					}else{
+						await DisplayAlert("ERROR", "Connection to " + desiredHost + " failed", "OK");
+					}
+				}
+			};
 
 			Content = new ScrollView {
 
-				Content = new ListView {
-
-					ItemsSource = _availList,
-					ItemTemplate = new DataTemplate (() => {
-						Label ipLabel = new Label ();
-						ipLabel.SetBinding (Label.TextProperty, "IP");
-
-						return new ViewCell {
-							View = new Frame {
-								Content = ipLabel
-							}
-						};
-					})
-
-				}
+				Content = listView
 			};
 		}
 
@@ -86,11 +108,14 @@ namespace StyrClient
 						if (receivedData.Length != 0) {
 							if (receivedData [0] == (byte)PacketType.Offer) {
 								Debug.WriteLine ("Adding Address {0} to list", ep.Address);
-								threadList.Add (new StyrServer{IP = ep.Address.ToString()});
+								StyrServer Balle = new StyrServer{ IP = ep.Address.ToString () };
+								Debug.WriteLine (Balle.IP);
+								threadList.Add (Balle);
+
 							}
 						}
-					}else if (sw.Elapsed.TotalSeconds > 10){
-						Debug.WriteLine("Exiting thread 'offerListener'");
+					} else if (sw.Elapsed.TotalSeconds > 10) {
+						Debug.WriteLine ("Exiting thread 'offerListener'");
 						break;
 					}
 				}
