@@ -19,7 +19,7 @@ namespace StyrClient
 				Spacing = 0,
 				VerticalOptions = LayoutOptions.FillAndExpand,
 				Children = {
-					new BoxView {
+					new TouchPad {
 						HorizontalOptions = LayoutOptions.FillAndExpand,
 						VerticalOptions = LayoutOptions.FillAndExpand,
 						Color = Color.Maroon,

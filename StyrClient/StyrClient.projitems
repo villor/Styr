@@ -12,5 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)StyrClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DiscoveryPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainRemotePage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TouchPad.cs" />
   </ItemGroup>
 </Project>
