@@ -43,7 +43,7 @@ namespace StyrClient.Droid
 
 		public override bool OnScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
 		{
-			Console.WriteLine ("OnScroll");
+			Console.WriteLine ("OnScroll x:{0} y:{1}", distanceX, distanceY);
 			return base.OnScroll (e1, e2, distanceX, distanceY);
 		}
 
