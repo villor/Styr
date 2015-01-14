@@ -85,7 +85,7 @@ namespace StyrClient
 						byte[] receivedData = threadClient.Receive (ref ep);
 						if (receivedData.Length != 0) {
 							if (receivedData [0] == (byte)PacketType.Offer) {
-								Debug.WriteLine ("Adding Address {0} to list", ep.Address.ToString ());
+								Debug.WriteLine ("Adding Address {0} to list", ep.Address);
 								threadList.Add (new StyrServer{IP = ep.Address.ToString()});
 							}
 						}
