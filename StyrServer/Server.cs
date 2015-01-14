@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace StyrServer
 {
@@ -12,7 +13,10 @@ namespace StyrServer
 		enum PacketType : byte {
 			Discovery,
 			Offer,
-			Connection
+			ConnectionReq,
+			ConnectionAck,
+			AccessDenied,
+			MouseMovement
 		};
 
 		private UdpClient udpClient;
@@ -20,10 +24,14 @@ namespace StyrServer
 
 		public bool Running { get; set; }
 
+		private List<Client> connectedClients;
+
 		public Server (int port)
 		{
 			udpClient = new UdpClient (port);
 			groupEP = new IPEndPoint (IPAddress.Any, port);
+
+			connectedClients = new List<Client> ();
 
 			Running = true;
 
@@ -41,15 +49,25 @@ namespace StyrServer
 					if (receivedPacket.Length > 0) {
 						switch (receivedPacket [0]) {
 						case (byte)PacketType.Discovery:
-							Console.WriteLine ("Discovery received from {0}:{1}", groupEP.Address, groupEP.Port);
+							Debug.WriteLine ("Discovery received from {0}:{1}", groupEP.Address, groupEP.Port);
 							byte[] offer = { (byte)PacketType.Offer };
 							udpClient.Send (offer, offer.Length, groupEP);
 							break;
-						case (byte)PacketType.Connection:
-							Console.WriteLine ("Connection received");
+
+						case (byte)PacketType.ConnectionReq:
+							Debug.WriteLine ("Connection received from {0}:{1}", groupEP.Address, groupEP.Port);
+							connectedClients.Add(new Client (groupEP));
+							byte[] ack = { (byte)PacketType.ConnectionAck };
+							udpClient.Send (ack, ack.Length, groupEP);
+							Debug.WriteLine ("Ack sent to {0}", groupEP.Address);
+							break;
+
+						case (byte)PacketType.MouseMovement:
+							if (connectedClients.Exists (p => p.EndPoint == groupEP)) {
+								Debug.WriteLine ("Mouse moved!");							}
 							break;
 						default:
-							Console.WriteLine ("Unknown packet received");
+							Debug.WriteLine ("Unknown packet received");
 							break;
 						}
 					}
