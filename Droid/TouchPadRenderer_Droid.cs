@@ -4,16 +4,16 @@ using StyrClient;
 using StyrClient.Droid;
 using Android.Views;
 
-[assembly: ExportRenderer (typeof(TouchPad), typeof(TouchPadRenderer))]
+[assembly: ExportRenderer (typeof(TouchPad), typeof(TouchPadRenderer_Droid))]
 
 namespace StyrClient.Droid
 {
-	public class TouchPadRenderer : BoxRenderer
+	public class TouchPadRenderer_Droid : BoxRenderer
 	{
 		private readonly TouchPadGestureListener _listener;
 		private readonly GestureDetector _detector;
 
-		public TouchPadRenderer ()
+		public TouchPadRenderer_Droid ()
 		{
 			_listener = new TouchPadGestureListener ();
 			_detector = new GestureDetector (_listener);
