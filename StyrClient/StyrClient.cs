@@ -9,7 +9,7 @@ namespace StyrClient
 		public App ()
 		{
 			// The root page of your application
-			MainPage = new NavigationPage(new DiscoveryPage ());
+			MainPage = new NavigationPage(new DiscoveryPage());
 		}
 
 		protected override void OnStart ()

@@ -3,6 +3,7 @@ using Xamarin.Forms;
 using StyrClient;
 using StyrClient.Droid;
 using Android.Views;
+using System;
 
 [assembly: ExportRenderer (typeof(TouchPad), typeof(TouchPadRenderer_Droid))]
 
@@ -22,7 +23,6 @@ namespace StyrClient.Droid
 		protected override void OnElementChanged (ElementChangedEventArgs<BoxView> e)
 		{
 			base.OnElementChanged (e);
-
 			if (e.NewElement == null) {
 				this.GenericMotion -= HandleGenericMotion;
 				this.Touch -= HandleTouch;
@@ -31,6 +31,14 @@ namespace StyrClient.Droid
 			if (e.OldElement == null) {
 				this.GenericMotion += HandleGenericMotion;
 				this.Touch += HandleTouch;
+
+				if (e.NewElement != null) {
+					TouchPad tp = (TouchPad)e.NewElement;
+
+					_listener.Scroll += (e1, e2, distanceX, distanceY) => {
+						tp.OnMove (distanceX, distanceY);
+					};
+				}
 			}
 		}
 
