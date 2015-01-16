@@ -24,13 +24,6 @@ namespace StyrClient.iOS
 		protected override void OnElementChanged (ElementChangedEventArgs<BoxView> e){
 			base.OnElementChanged (e);
 
-
-			longPressGestureRecognizer = new UILongPressGestureRecognizer (() => Console.WriteLine ("Long Press"));
-			pinchGestureRecognizer = new UIPinchGestureRecognizer (() => Console.WriteLine ("Pinch"));
-			panGestureRecognizer = new UIPanGestureRecognizer (() => Console.WriteLine ("Pan" + panGestureRecognizer.TranslationInView(this)));
-			swipeGestureRecognizer = new UISwipeGestureRecognizer (() => Console.WriteLine ("Swipe"));
-			rotationGestureRecognizer = new UIRotationGestureRecognizer (() => Console.WriteLine ("Rotation"));
-
 			if (e.NewElement == null) {
 				if (longPressGestureRecognizer != null) {
 					this.RemoveGestureRecognizer (longPressGestureRecognizer);
@@ -50,11 +43,28 @@ namespace StyrClient.iOS
 			}
 
 			if (e.OldElement == null) {
-				this.AddGestureRecognizer (longPressGestureRecognizer);
-				this.AddGestureRecognizer (pinchGestureRecognizer);
-				this.AddGestureRecognizer (panGestureRecognizer);
-				this.AddGestureRecognizer (swipeGestureRecognizer);
-				this.AddGestureRecognizer (rotationGestureRecognizer);
+			
+				if (e.NewElement != null) {
+					TouchPad tp = (TouchPad)e.NewElement;
+
+					longPressGestureRecognizer = new UILongPressGestureRecognizer (() => {
+						Console.WriteLine ("Long Press" + longPressGestureRecognizer.LocationInView(this));
+						tp.OnMove(longPressGestureRecognizer.LocationInView(this).X, longPressGestureRecognizer.LocationInView(this).Y);
+					}); 
+					pinchGestureRecognizer = new UIPinchGestureRecognizer (() => Console.WriteLine ("Pinch"));
+					panGestureRecognizer = new UIPanGestureRecognizer (() => {
+						Console.WriteLine ("Pan" + panGestureRecognizer.LocationInView(this));
+						tp.OnMove(panGestureRecognizer.LocationInView(this).X, panGestureRecognizer.LocationInView(this).Y);
+					});
+					swipeGestureRecognizer = new UISwipeGestureRecognizer (() => Console.WriteLine ("Swipe"));
+					rotationGestureRecognizer = new UIRotationGestureRecognizer (() => Console.WriteLine ("Rotation"));
+
+					this.AddGestureRecognizer (longPressGestureRecognizer);
+					this.AddGestureRecognizer (pinchGestureRecognizer);
+					this.AddGestureRecognizer (panGestureRecognizer);
+					this.AddGestureRecognizer (swipeGestureRecognizer);
+					this.AddGestureRecognizer (rotationGestureRecognizer);
+				}
 			}
 		}
 	}

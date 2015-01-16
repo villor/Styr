@@ -19,12 +19,12 @@ namespace StyrClient
 			BuildPageGUI ();
 		}
 
-		public MainRemotePage(){
+		public MainRemotePage(){ // <---- For testing purposes
 			BuildPageGUI ();
 		}
 
 		~MainRemotePage(){
-			Debug.WriteLine ("Instance of MainRemotePage destroyed"); //<---------- Its just not happening
+			Debug.WriteLine ("Instance of MainRemotePage destroyed"); // <------- Its just not happening
 		}
 
 		public void BuildPageGUI(){

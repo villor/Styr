@@ -78,20 +78,17 @@ namespace StyrClient
 		public void DiscoverHosts ()
 		{
 			IPAddress send_to_address = IPAddress.Parse ("81.224.126.151");
-
 			IPEndPoint sending_end_point = new IPEndPoint (send_to_address, 1337);
-
 			Debug.WriteLine ("sending Discovery Message");
 
-			byte[] send_buffer = { (byte)PacketType.Discovery };
+			byte[] send_buffer = {(byte)PacketType.Discovery};
 
 			UdpClient udpClient = new UdpClient ();
 			udpClient.Send (send_buffer, send_buffer.Length, sending_end_point);
 
 			Debug.WriteLine ("sending to address: {0} port {1}", 
 				sending_end_point.Address, sending_end_point.Port);
-
-
+				
 			UdpClient threadClient = udpClient;
 			List<StyrServer> threadList = _availList;
 

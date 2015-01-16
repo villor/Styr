@@ -3,6 +3,6 @@ using Xamarin.Forms;
 
 namespace StyrClient
 {
-	public class TouchPad : BoxView {}
+	public class TouchPad : BoxView {} 
 }
 
