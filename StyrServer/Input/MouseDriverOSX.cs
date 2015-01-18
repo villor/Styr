@@ -54,9 +54,16 @@ namespace StyrServer.Input
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
 		private static extern void CFRelease (IntPtr cf);
 
+		[DllImport("ApplicationServices.framework/ApplicationServices")]
+		private static extern IntPtr CGEventCreate (IntPtr source);
+
+		[DllImport("ApplicationServices.framework/ApplicationServices")]
+		private static extern CGPoint CGEventGetLocation (IntPtr e);
+
 		public MouseDriverOSX ()
 		{
-
+			// TODO: Throw exception when not on OSX
+			// throw new PlatformNotSupportedException("<message>"); 
 		}
 
 		public void MoveTo (float x, float y)
@@ -77,7 +84,10 @@ namespace StyrServer.Input
 
 		public Point GetPosition ()
 		{
-			throw new NotImplementedException ();
+			IntPtr mouse = CGEventCreate(IntPtr.Zero);
+			CGPoint mousePos = CGEventGetLocation(mouse);
+			CFRelease(mouse);
+			return new Point { X = mousePos.X, Y = mousePos.Y };
 		}
 
 		public Point GetResolution ()
