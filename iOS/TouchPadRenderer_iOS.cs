@@ -11,6 +11,8 @@ namespace StyrClient.iOS
 {
 	public class TouchPadRenderer_iOS : BoxRenderer
 	{
+		UITapGestureRecognizer singleTapGestureRecognizer;
+		UITapGestureRecognizer doubleTapGestureRecognizer;
 		UILongPressGestureRecognizer longPressGestureRecognizer;
 		UIPinchGestureRecognizer pinchGestureRecognizer;
 		UIPanGestureRecognizer panGestureRecognizer;
@@ -48,6 +50,17 @@ namespace StyrClient.iOS
 					TouchPad tp = (TouchPad)e.NewElement;
 					CoreGraphics.CGPoint lastPos = new CoreGraphics.CGPoint(-1, -1);
 
+					singleTapGestureRecognizer = new UITapGestureRecognizer (() => {
+						tp.OnSingleTap();
+					});
+
+					doubleTapGestureRecognizer = new UITapGestureRecognizer (() => {
+						tp.OnDoubleTap();
+					});
+
+					singleTapGestureRecognizer.NumberOfTapsRequired = 1;
+					singleTapGestureRecognizer.RequireGestureRecognizerToFail (doubleTapGestureRecognizer);
+					doubleTapGestureRecognizer.NumberOfTapsRequired = 2;
 
 					longPressGestureRecognizer = new UILongPressGestureRecognizer (() => {
 						if (lastPos.X > 0 && lastPos.Y > 0){
@@ -60,6 +73,10 @@ namespace StyrClient.iOS
 					pinchGestureRecognizer = new UIPinchGestureRecognizer (() => Console.WriteLine ("Pinch"));
 
 					panGestureRecognizer = new UIPanGestureRecognizer (() => {
+						if (panGestureRecognizer.State == UIGestureRecognizerState.Began){
+							lastPos.X = -1;
+							lastPos.Y = -1;
+						}
 						if (lastPos.X > 0 && lastPos.Y > 0){
 							tp.OnMove((float)panGestureRecognizer.LocationInView(this).X - (float)lastPos.X, (float)panGestureRecognizer.LocationInView(this).Y - (float)lastPos.Y);
 						}
@@ -70,6 +87,8 @@ namespace StyrClient.iOS
 
 					rotationGestureRecognizer = new UIRotationGestureRecognizer (() => Console.WriteLine ("Rotation"));
 
+					this.AddGestureRecognizer (singleTapGestureRecognizer);
+					this.AddGestureRecognizer (doubleTapGestureRecognizer);
 					this.AddGestureRecognizer (longPressGestureRecognizer);
 					this.AddGestureRecognizer (pinchGestureRecognizer);
 					this.AddGestureRecognizer (panGestureRecognizer);

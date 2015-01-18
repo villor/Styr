@@ -57,6 +57,12 @@ namespace StyrClient
 				Debug.WriteLine ("Sending MouseMovement to {0}", connectedEndPoint.Address);
 			};
 
+			touchPad.SingleTapped += () => {
+				byte [] packet = {(byte)PacketType.MouseLeftClick};
+				connectedUdpClient.Send(packet, packet.Length, connectedEndPoint);
+				Debug.WriteLine("Sending MouseLeftClick to {0}", connectedEndPoint);
+			};
+
 			Content = new StackLayout {
 				Spacing = 0,
 				VerticalOptions = LayoutOptions.FillAndExpand,

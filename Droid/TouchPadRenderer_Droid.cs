@@ -35,6 +35,10 @@ namespace StyrClient.Droid
 				if (e.NewElement != null) {
 					TouchPad tp = (TouchPad)e.NewElement;
 
+					_listener.SingleTapUp += (e2) => {
+						tp.OnSingleTap();
+					};
+
 					_listener.Scroll += (e1, e2, distanceX, distanceY) => {
 						tp.OnMove (-distanceX, -distanceY);
 					};

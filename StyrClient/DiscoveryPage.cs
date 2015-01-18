@@ -17,7 +17,8 @@ namespace StyrClient
 		ConnectionReq,
 		ConnectionAck,
 		AccessDenied,
-		MouseMovement
+		MouseMovement,
+		MouseLeftClick
 	}
 
 	public class DiscoveryPage : ContentPage
