@@ -9,17 +9,19 @@ using System.Diagnostics;
 
 namespace StyrClient
 {
+
+	enum PacketType : byte
+	{
+		Discovery,
+		Offer,
+		ConnectionReq,
+		ConnectionAck,
+		AccessDenied,
+		MouseMovement
+	}
+
 	public class DiscoveryPage : ContentPage
 	{
-		enum PacketType : byte
-		{
-			Discovery,
-			Offer,
-			ConnectionReq,
-			ConnectionAck,
-			AccessDenied
-		}
-
 		struct StyrServer
 		{
 			public string IP { get; set; }

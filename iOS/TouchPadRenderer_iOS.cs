@@ -46,17 +46,28 @@ namespace StyrClient.iOS
 			
 				if (e.NewElement != null) {
 					TouchPad tp = (TouchPad)e.NewElement;
+					CoreGraphics.CGPoint lastPos = new CoreGraphics.CGPoint(-1, -1);
+
 
 					longPressGestureRecognizer = new UILongPressGestureRecognizer (() => {
-						Console.WriteLine ("Long Press" + longPressGestureRecognizer.LocationInView(this));
-						tp.OnMove(longPressGestureRecognizer.LocationInView(this).X, longPressGestureRecognizer.LocationInView(this).Y);
+						if (lastPos.X > 0 && lastPos.Y > 0){
+							tp.OnMove((float)longPressGestureRecognizer.LocationInView(this).X - (float)lastPos.X, (float)longPressGestureRecognizer.LocationInView(this).Y - (float)lastPos.Y);
+						}
+						lastPos = longPressGestureRecognizer.LocationInView(this);
+
 					}); 
+
 					pinchGestureRecognizer = new UIPinchGestureRecognizer (() => Console.WriteLine ("Pinch"));
+
 					panGestureRecognizer = new UIPanGestureRecognizer (() => {
-						Console.WriteLine ("Pan" + panGestureRecognizer.LocationInView(this));
-						tp.OnMove(panGestureRecognizer.LocationInView(this).X, panGestureRecognizer.LocationInView(this).Y);
+						if (lastPos.X > 0 && lastPos.Y > 0){
+							tp.OnMove((float)panGestureRecognizer.LocationInView(this).X - (float)lastPos.X, (float)panGestureRecognizer.LocationInView(this).Y - (float)lastPos.Y);
+						}
+						lastPos = panGestureRecognizer.LocationInView(this);
 					});
+
 					swipeGestureRecognizer = new UISwipeGestureRecognizer (() => Console.WriteLine ("Swipe"));
+
 					rotationGestureRecognizer = new UIRotationGestureRecognizer (() => Console.WriteLine ("Rotation"));
 
 					this.AddGestureRecognizer (longPressGestureRecognizer);
