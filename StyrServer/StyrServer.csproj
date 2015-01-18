@@ -64,6 +64,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="Input\IMouseDriver.cs" />
+    <Compile Include="Input\MouseDriverOSX.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Input\" />
+  </ItemGroup>
 </Project>
