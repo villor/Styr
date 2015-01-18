@@ -39,7 +39,7 @@ namespace StyrServer
 
 			Running = true;
 
-			mouse = MouseDriverOSX ();
+			mouse = new MouseDriverOSX ();
 
 			Thread mainThread = new Thread (ServerLoop);
 			mainThread.Start ();
