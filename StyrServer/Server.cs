@@ -18,7 +18,8 @@ namespace StyrServer
 			ConnectionReq,
 			ConnectionAck,
 			AccessDenied,
-			MouseMovement
+			MouseMovement,
+			MouseLeftClick
 		};
 
 		private UdpClient udpClient;
@@ -83,6 +84,13 @@ namespace StyrServer
 
 								Debug.WriteLine ("X: {0}, Y: {1}", BitConverter.ToSingle (xArr, 0), BitConverter.ToSingle (yArr, 0));
 								mouse.RelativeMove (BitConverter.ToSingle (xArr, 0), BitConverter.ToSingle (yArr, 0));
+							}
+							break;
+
+						case (byte)PacketType.MouseLeftClick:
+							if (connectedClients.Exists (p => p.EndPoint.Equals(groupEP))) {
+								Debug.WriteLine ("Click!");
+								mouse.LeftButtonClick ();
 							}
 							break;
 
