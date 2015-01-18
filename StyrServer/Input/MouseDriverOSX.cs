@@ -60,19 +60,33 @@ namespace StyrServer.Input
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
 		private static extern CGPoint CGEventGetLocation (IntPtr e);
 
+		private bool rightButtonDown = false;
+		private bool leftButtonDown = false;
+
 		public MouseDriverOSX ()
 		{
 			// TODO: Throw exception when not on OSX
-			// throw new PlatformNotSupportedException("<message>"); 
+			// throw new PlatformNotSupportedException("<message>");
 		}
 
 		public void MoveTo (float x, float y)
 		{
+			CGEventType eventType;
+
+			if (leftButtonDown) {
+				eventType = CGEventType.LeftMouseDragged;
+			} else if (rightButtonDown) {
+				eventType = CGEventType.RightMouseDragged;
+			} else {
+				eventType = CGEventType.MouseMoved;
+			}
+
 			CGPoint p = new CGPoint { X = x, Y = y };
-			IntPtr move = CGEventCreateMouseEvent(
-				IntPtr.Zero, CGEventType.MouseMoved,
+			IntPtr move = CGEventCreateMouseEvent (
+				IntPtr.Zero, eventType,
 				p, CGMouseButton.kCGMouseButtonLeft
 			);
+
 			CGEventPost(CGEventTapLocation.kCGHIDEventTap, move);
 			CFRelease(move);
 		}
@@ -91,9 +105,72 @@ namespace StyrServer.Input
 			return new Point { X = mousePos.X, Y = mousePos.Y };
 		}
 
-		public Point GetResolution ()
+		public void LeftButtonDown ()
 		{
-			throw new NotImplementedException ();
+			Point mousePos = GetPosition ();
+			CGPoint p = new CGPoint { X = mousePos.X, Y = mousePos.Y };
+			IntPtr click = CGEventCreateMouseEvent(
+				IntPtr.Zero, CGEventType.LeftMouseDown,
+				p, CGMouseButton.kCGMouseButtonLeft
+			);
+			CGEventPost(CGEventTapLocation.kCGHIDEventTap, click);
+			CFRelease(click);
+
+			leftButtonDown = true;
+		}
+
+		public void LeftButtonUp ()
+		{
+			Point mousePos = GetPosition ();
+			CGPoint p = new CGPoint { X = mousePos.X, Y = mousePos.Y };
+			IntPtr click = CGEventCreateMouseEvent(
+				IntPtr.Zero, CGEventType.LeftMouseUp,
+				p, CGMouseButton.kCGMouseButtonLeft
+			);
+			CGEventPost(CGEventTapLocation.kCGHIDEventTap, click);
+			CFRelease(click);
+
+			leftButtonDown = false;
+		}
+
+		public void LeftButtonClick ()
+		{
+			LeftButtonDown ();
+			LeftButtonUp ();
+		}
+
+		public void RightButtonDown ()
+		{
+			Point mousePos = GetPosition ();
+			CGPoint p = new CGPoint { X = mousePos.X, Y = mousePos.Y };
+			IntPtr click = CGEventCreateMouseEvent(
+				IntPtr.Zero, CGEventType.RightMouseDown,
+				p, CGMouseButton.kCGMouseButtonRight
+			);
+			CGEventPost(CGEventTapLocation.kCGHIDEventTap, click);
+			CFRelease(click);
+
+			rightButtonDown = true;
+		}
+
+		public void RightButtonUp ()
+		{
+			Point mousePos = GetPosition ();
+			CGPoint p = new CGPoint { X = mousePos.X, Y = mousePos.Y };
+			IntPtr click = CGEventCreateMouseEvent(
+				IntPtr.Zero, CGEventType.RightMouseUp,
+				p, CGMouseButton.kCGMouseButtonRight
+			);
+			CGEventPost(CGEventTapLocation.kCGHIDEventTap, click);
+			CFRelease(click);
+
+			rightButtonDown = false;
+		}
+
+		public void RightButtonClick ()
+		{
+			RightButtonDown ();
+			RightButtonUp ();
 		}
 	}
 }
