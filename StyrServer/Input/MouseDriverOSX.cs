@@ -79,7 +79,8 @@ namespace StyrServer.Input
 
 		public void RelativeMove (float x, float y)
 		{
-			throw new NotImplementedException ();
+			Point mousePos = GetPosition ();
+			MoveTo (mousePos.X + x, mousePos.Y + y);
 		}
 
 		public Point GetPosition ()
