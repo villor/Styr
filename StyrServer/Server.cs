@@ -64,14 +64,17 @@ namespace StyrServer
 
 						case (byte)PacketType.MouseMovement:
 							if (connectedClients.Exists (p => p.EndPoint == groupEP)) {
-								Debug.WriteLine ("Mouse moved!");							}
+								Debug.WriteLine ("Mouse moved!");
+							}
 							break;
+
 						default:
 							Debug.WriteLine ("Unknown packet received");
 							break;
 						}
 					}
 				}
+				Thread.Sleep (1);
 			}
 			udpClient.Close ();
 		}
