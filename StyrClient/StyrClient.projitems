@@ -13,5 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)DiscoveryPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainRemotePage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TouchPad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RemoteSession.cs" />
   </ItemGroup>
 </Project>

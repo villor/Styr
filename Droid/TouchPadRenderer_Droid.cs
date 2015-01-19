@@ -11,13 +11,13 @@ namespace StyrClient.Droid
 {
 	public class TouchPadRenderer_Droid : BoxRenderer
 	{
-		private readonly TouchPadGestureListener _listener;
-		private readonly GestureDetector _detector;
+		private readonly TouchPadGestureListener listener;
+		private readonly GestureDetector detector;
 
 		public TouchPadRenderer_Droid ()
 		{
-			_listener = new TouchPadGestureListener ();
-			_detector = new GestureDetector (_listener);
+			listener = new TouchPadGestureListener ();
+			detector = new GestureDetector (listener);
 		}
 
 		protected override void OnElementChanged (ElementChangedEventArgs<BoxView> e)
@@ -35,11 +35,11 @@ namespace StyrClient.Droid
 				if (e.NewElement != null) {
 					TouchPad tp = (TouchPad)e.NewElement;
 
-					_listener.SingleTapUp += (e2) => {
+					listener.SingleTapUp += (e2) => {
 						tp.OnSingleTap();
 					};
 
-					_listener.Scroll += (e1, e2, distanceX, distanceY) => {
+					listener.Scroll += (e1, e2, distanceX, distanceY) => {
 						tp.OnMove (-distanceX, -distanceY);
 					};
 				}
@@ -48,12 +48,12 @@ namespace StyrClient.Droid
 
 		void HandleTouch (object sender, TouchEventArgs e)
 		{
-			_detector.OnTouchEvent (e.Event);
+			detector.OnTouchEvent (e.Event);
 		}
 
 		void HandleGenericMotion (object sender, GenericMotionEventArgs e)
 		{
-			_detector.OnTouchEvent (e.Event);
+			detector.OnTouchEvent (e.Event);
 		}
 	}
 }

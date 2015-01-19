@@ -11,13 +11,11 @@ namespace StyrClient
 	public class MainRemotePage : ContentPage
 	{
 		//Class members
-		IPEndPoint connectedEndPoint;
-		UdpClient connectedUdpClient;
+		private RemoteSession remoteSession;
 
-		public MainRemotePage(IPEndPoint endPoint, UdpClient udpClient)
+		public MainRemotePage(RemoteSession session)
 		{
-			connectedEndPoint = endPoint;
-			connectedUdpClient = udpClient;
+			remoteSession = session;
 			BuildPageGUI ();
 		}
 
@@ -40,27 +38,15 @@ namespace StyrClient
 				Color = Color.Maroon
 
 			};
+
 			touchPad.Moved += (float x, float y) => {
-				byte[] packet = new byte[9];
-				byte[] xArray = BitConverter.GetBytes(x);
-				byte[] yArray = BitConverter.GetBytes(y);
-				packet[0] = (byte) PacketType.MouseMovement;
-				if (BitConverter.IsLittleEndian){
-					Array.Reverse(xArray);
-					Array.Reverse(yArray);
-				}
-
-				Array.Copy(xArray, 0, packet, 1, xArray.Length);
-				Array.Copy(yArray, 0, packet, 5, yArray.Length);
-
-				connectedUdpClient.Send(packet, packet.Length, connectedEndPoint);
-				Debug.WriteLine ("Sending MouseMovement to {0}", connectedEndPoint.Address);
+				remoteSession.SendMouseMovement(x, y);
+				//Debug.WriteLine ("Sending MouseMovement to remote connected server");
 			};
 
 			touchPad.SingleTapped += () => {
-				byte [] packet = {(byte)PacketType.MouseLeftClick};
-				connectedUdpClient.Send(packet, packet.Length, connectedEndPoint);
-				Debug.WriteLine("Sending MouseLeftClick to {0}", connectedEndPoint);
+				remoteSession.SendLeftClick();
+				//Debug.WriteLine("Sending MouseLeftClick to remote connected server");
 			};
 
 			Content = new StackLayout {

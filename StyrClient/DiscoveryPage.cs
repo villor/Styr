@@ -53,23 +53,25 @@ namespace StyrClient
 
 				IPAddress desiredHost = IPAddress.Parse (serverItem.IP);
 				IPEndPoint desiredEndPoint = new IPEndPoint (desiredHost, 1337);
-				byte[] packet = { (byte)PacketType.ConnectionReq };
-				UdpClient udpClient = new UdpClient ();
-				udpClient.Send (packet, packet.Length, desiredEndPoint);
-				Debug.WriteLine ("Sending ConnectionReq to {0}", desiredHost);
 
-				byte[] receivedPacket = udpClient.Receive (ref desiredEndPoint);
-				if (receivedPacket.Length != 0) {
-					if (receivedPacket [0] == (byte)PacketType.ConnectionAck) {
-						Debug.WriteLine ("Connection request accepted by {0}", desiredEndPoint.Address);
-						var mainRemotePage = new MainRemotePage (desiredEndPoint, udpClient);
-						await Navigation.PushAsync (mainRemotePage);
-					}else if (receivedPacket [0] == (byte)PacketType.AccessDenied){
-						await DisplayAlert("Access Denied", "Connection to " + desiredHost + " failed", "OK");
-					}else{
-						await DisplayAlert("ERROR", "Connection to " + desiredHost + " failed", "OK");
-					}
+				try {
+					RemoteSession remoteSession = new RemoteSession (desiredEndPoint); // <---- this is where it goes to shit
+					var mainRemotePage = new MainRemotePage(remoteSession);
+					await Navigation.PushAsync (mainRemotePage);
+				} catch (UnauthorizedAccessException uex) {
+					Debug.WriteLine(uex.StackTrace);
+					await DisplayAlert ("Unauthorized access", "Access has been denied", "OK");
+				} catch (SocketException sex) {
+					Debug.WriteLine(sex.StackTrace);
+					await DisplayAlert ("Socket exception", "Something went wrong when connecting", "OK");
+				} catch (ArgumentNullException aex) {
+					Debug.WriteLine(aex.StackTrace);
+					await DisplayAlert ("Argument null exception", "Something went wrong when connecting", "OK");
+				} catch (Exception ex) {
+					Debug.WriteLine(ex.StackTrace);
+					await DisplayAlert ("Unknown exception", "Something went wrong when connecting", "OK");
 				}
+
 			};
 
 			Content = new ScrollView {
@@ -80,7 +82,7 @@ namespace StyrClient
 
 		public void DiscoverHosts ()
 		{
-			IPAddress send_to_address = IPAddress.Parse ("81.224.126.151");
+			IPAddress send_to_address = IPAddress.Parse ("192.168.1.255"); // 81.224.126.151
 			IPEndPoint sending_end_point = new IPEndPoint (send_to_address, 1337);
 			Debug.WriteLine ("sending Discovery Message");
 
