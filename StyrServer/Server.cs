@@ -10,13 +10,18 @@ using StyrServer.Input;
 
 namespace StyrServer
 {
+	class AckedPacket {
+		public ushort ID;
+		public double ElapsedTime;
+	}
+
 	public class Server
 	{
 		enum PacketType : byte {
 			Discovery,
 			Offer,
-			ConnectionReq,
-			ConnectionAck,
+			Connection,
+			Ack,
 			AccessDenied,
 			MouseMovement,
 			MouseLeftClick
@@ -27,9 +32,10 @@ namespace StyrServer
 
 		private IMouseDriver mouse;
 
-		public bool Running { get; set; }
-
 		private List<Client> connectedClients;
+		private List<AckedPacket> ackedPackets;
+
+		public bool Running { get; set; }
 
 		public Server (int port)
 		{
@@ -37,6 +43,7 @@ namespace StyrServer
 			groupEP = new IPEndPoint (IPAddress.Any, port);
 
 			connectedClients = new List<Client> ();
+			ackedPackets = new List<AckedPacket> ();
 
 			Running = true;
 
@@ -47,9 +54,24 @@ namespace StyrServer
 			Console.WriteLine ("Server running on port {0}", port);
 		}
 
+		private void sendAck(ushort id) {
+			byte[] ackPack = new byte[3];
+			ackPack[0] = (byte)PacketType.Ack;
+			byte[] idArr = BitConverter.GetBytes(id);
+
+			if (BitConverter.IsLittleEndian) {
+				Array.Reverse(idArr);
+			}
+
+			Array.Copy (idArr, 0, ackPack, 1, idArr.Length);
+			udpClient.Send (ackPack, ackPack.Length, groupEP);
+			ackedPackets.Add(new AckedPacket { ID = id, ElapsedTime = 0 });
+		}
+
 		private void ServerLoop()
 		{
 			byte[] receivedPacket;
+			Stopwatch sw = new Stopwatch ();
 			while (Running) {
 				if (udpClient.Available > 0) {
 					receivedPacket = udpClient.Receive (ref groupEP);
@@ -61,12 +83,25 @@ namespace StyrServer
 							udpClient.Send (offer, offer.Length, groupEP);
 							break;
 
-						case (byte)PacketType.ConnectionReq:
-							Debug.WriteLine ("Connection received from {0}:{1}", groupEP.Address, groupEP.Port);
-							connectedClients.Add(new Client (groupEP));
-							byte[] ack = { (byte)PacketType.ConnectionAck };
-							udpClient.Send (ack, ack.Length, groupEP);
-							Debug.WriteLine ("Ack sent to {0}", groupEP.Address);
+						case (byte)PacketType.Connection:
+							if (receivedPacket.Length == 3) {
+								byte[] idArr = new byte[2];
+								idArr [0] = receivedPacket [1];
+								idArr [1] = receivedPacket [2];
+
+								if (BitConverter.IsLittleEndian) {
+									Array.Reverse (idArr);
+								}
+
+								ushort id = BitConverter.ToUInt16 (idArr, 0);
+
+								Debug.WriteLine ("Connection received from {0}:{1}", groupEP.Address, groupEP.Port);
+								if (!ackedPackets.Exists (p => p.ID == id)) {
+									connectedClients.Add (new Client (groupEP));
+								}
+								sendAck (id);
+								Debug.WriteLine ("Ack sent to {0}", groupEP.Address);
+							}
 							break;
 
 						case (byte)PacketType.MouseMovement:
@@ -88,18 +123,41 @@ namespace StyrServer
 							break;
 
 						case (byte)PacketType.MouseLeftClick:
-							if (connectedClients.Exists (p => p.EndPoint.Equals(groupEP))) {
-								Debug.WriteLine ("Click!");
-								mouse.LeftButtonClick ();
+							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
+
+								byte[] idArr = new byte[2];
+								idArr [0] = receivedPacket [1];
+								idArr [1] = receivedPacket [2];
+
+								if (BitConverter.IsLittleEndian) {
+									Array.Reverse (idArr);
+								}
+
+								ushort id = BitConverter.ToUInt16 (idArr, 0);
+								if (!ackedPackets.Exists (p => p.ID == id)) {
+									Debug.WriteLine ("Click!");
+									mouse.LeftButtonClick ();
+								}
+								sendAck (id);
 							}
 							break;
 
 						default:
-							Debug.WriteLine ("Unknown packet received");
+							Debug.WriteLine ("Unknown packet received from {0}:\n0x{1}", groupEP.Address, BitConverter.ToString (receivedPacket).Replace ("-", string.Empty));
 							break;
 						}
 					}
 				}
+
+				sw.Stop ();
+				for (int i = ackedPackets.Count - 1; i >= 0; i--) {
+					ackedPackets[i].ElapsedTime += sw.Elapsed.TotalMilliseconds;
+					if (ackedPackets[i].ElapsedTime > 1000) {
+						ackedPackets.RemoveAt (i);
+					}
+				}
+				sw.Restart ();
+
 				Thread.Sleep (1);
 			}
 			udpClient.Close ();
