@@ -13,7 +13,7 @@ namespace StyrClient
 		//Class members
 		private RemoteSession remoteSession;
 
-		public MainRemotePage(RemoteSession session)
+		public MainRemotePage(ref RemoteSession session)
 		{
 			remoteSession = session;
 			BuildPageGUI ();

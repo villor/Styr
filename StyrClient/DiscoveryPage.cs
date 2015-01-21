@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
 
 
 namespace StyrClient
@@ -15,7 +16,7 @@ namespace StyrClient
 		Discovery,
 		Offer,
 		ConnectionReq,
-		ConnectionAck,
+		Ack,
 		AccessDenied,
 		MouseMovement,
 		MouseLeftClick
@@ -29,7 +30,7 @@ namespace StyrClient
 		}
 
 		//Class members
-		List<StyrServer> _availList = new List<StyrServer> ();
+		ObservableCollection<StyrServer> _availHosts = new ObservableCollection<StyrServer> ();
 
 		public DiscoveryPage ()
 		{
@@ -43,7 +44,7 @@ namespace StyrClient
 
 			var listView = new ListView {
 
-				ItemsSource = _availList,
+				ItemsSource = _availHosts,
 				ItemTemplate = new DataTemplate (typeof(TextCell)),
 			};
 			listView.ItemTemplate.SetBinding (TextCell.TextProperty, "IP");
@@ -51,12 +52,9 @@ namespace StyrClient
 			listView.ItemTapped += async (sender, e) => {
 				var serverItem = (StyrServer)e.Item;
 
-				IPAddress desiredHost = IPAddress.Parse (serverItem.IP);
-				IPEndPoint desiredEndPoint = new IPEndPoint (desiredHost, 1337);
-
 				try {
-					RemoteSession remoteSession = new RemoteSession (desiredEndPoint); // <---- this is where it goes to shit
-					var mainRemotePage = new MainRemotePage(remoteSession);
+					RemoteSession remoteSession = new RemoteSession (IPAddress.Parse(serverItem.IP)); // <---- this is where it goes to shit
+					var mainRemotePage = new MainRemotePage(ref remoteSession);
 					await Navigation.PushAsync (mainRemotePage);
 				} catch (UnauthorizedAccessException uex) {
 					Debug.WriteLine(uex.StackTrace);
@@ -82,20 +80,20 @@ namespace StyrClient
 
 		public void DiscoverHosts ()
 		{
-			IPAddress send_to_address = IPAddress.Parse ("192.168.1.255"); // 81.224.126.151
+			IPAddress send_to_address = IPAddress.Parse ("10.7.41.60"); // 81.224.126.151
 			IPEndPoint sending_end_point = new IPEndPoint (send_to_address, 1337);
 			Debug.WriteLine ("sending Discovery Message");
 
 			byte[] send_buffer = {(byte)PacketType.Discovery};
 
 			UdpClient udpClient = new UdpClient ();
-			udpClient.Send (send_buffer, send_buffer.Length, sending_end_point);
+			udpClient.Send (send_buffer, send_buffer.Length, sending_end_point); // Loopa
 
 			Debug.WriteLine ("sending to address: {0} port {1}", 
 				sending_end_point.Address, sending_end_point.Port);
 				
 			UdpClient threadClient = udpClient;
-			List<StyrServer> threadList = _availList;
+			ObservableCollection<StyrServer> threadList = _availHosts;
 
 			Thread offerListener = new Thread (() => {
 				System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch ();
