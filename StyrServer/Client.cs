@@ -36,7 +36,10 @@ namespace StyrServer
 		public Client (IPEndPoint ep)
 		{
 			_ep = ep;
+			TimeSinceLastPing = TimeSpan.Zero;
 		}
+
+		public TimeSpan TimeSinceLastPing { get; set; }
 	}
 }
 

@@ -76,6 +76,15 @@ namespace StyrServer
 							}
 							break;
 
+						case (byte)PacketType.Ping:
+							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
+								Debug.WriteLine ("Ping!");
+								ushort id = PacketConverter.GetUShort(receivedPacket, 1);
+								connectedClients.Find (p => p.EndPoint.Equals (groupEP)).TimeSinceLastPing = TimeSpan.Zero;
+								sendAck (id);
+							}
+							break;
+
 						case (byte)PacketType.MouseMovement:
 							if (connectedClients.Exists (p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 9) {
 								mouse.RelativeMove (PacketConverter.GetFloat(receivedPacket, 1), PacketConverter.GetFloat(receivedPacket, 5));
@@ -105,6 +114,13 @@ namespace StyrServer
 					ackedPackets[i].ElapsedTime += sw.Elapsed.TotalMilliseconds;
 					if (ackedPackets[i].ElapsedTime > 1000) {
 						ackedPackets.RemoveAt (i);
+					}
+				}
+				for (int i = connectedClients.Count - 1; i >= 0; i--) {
+					connectedClients[i].TimeSinceLastPing += sw.Elapsed;
+					if (connectedClients[i].TimeSinceLastPing.TotalMilliseconds > 5000) {
+						Debug.WriteLine ("Client timed out and was disconnected (" + connectedClients [i].IP.ToString () + ")");
+						connectedClients.RemoveAt (i);
 					}
 				}
 				sw.Restart ();

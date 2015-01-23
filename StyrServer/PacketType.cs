@@ -7,6 +7,7 @@ namespace StyrServer
 		Offer,
 		Connection,
 		Ack,
+		Ping,
 		AccessDenied,
 		MouseMovement,
 		MouseLeftClick
