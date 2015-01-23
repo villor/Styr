@@ -5,6 +5,8 @@ using System.Net.Sockets;
 using Xamarin.Forms;
 using System.Diagnostics;
 
+using StyrClient.Network;
+
 namespace StyrClient
 {
 

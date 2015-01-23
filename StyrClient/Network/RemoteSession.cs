@@ -5,16 +5,8 @@ using System.Net;
 using System.Diagnostics;
 using System.Threading;
 
-namespace StyrClient
+namespace StyrClient.Network
 {
-	class ReliablePacket
-	{
-		public byte[] Packet;
-		public ushort ID;
-		public double ElapsedTime;
-		public double SendTimer;
-	}
-
 	public class RemoteSession
 	{
 		private UdpClient udpClient;

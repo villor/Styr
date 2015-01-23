@@ -13,6 +13,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)DiscoveryPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainRemotePage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TouchPad.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RemoteSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\RemoteSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\PacketType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\ReliablePacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Discovery.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\StyrServer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Network\" />
   </ItemGroup>
 </Project>
