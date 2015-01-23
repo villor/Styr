@@ -10,23 +10,8 @@ using StyrServer.Input;
 
 namespace StyrServer
 {
-	class AckedPacket {
-		public ushort ID;
-		public double ElapsedTime;
-	}
-
 	public class Server
 	{
-		enum PacketType : byte {
-			Discovery,
-			Offer,
-			Connection,
-			Ack,
-			AccessDenied,
-			MouseMovement,
-			MouseLeftClick
-		};
-
 		private UdpClient udpClient;
 		private IPEndPoint groupEP;
 
@@ -57,13 +42,8 @@ namespace StyrServer
 		private void sendAck(ushort id) {
 			byte[] ackPack = new byte[3];
 			ackPack[0] = (byte)PacketType.Ack;
-			byte[] idArr = BitConverter.GetBytes(id);
+			PacketConverter.PutUShort (id, ackPack, 1);
 
-			if (BitConverter.IsLittleEndian) {
-				Array.Reverse(idArr);
-			}
-
-			Array.Copy (idArr, 0, ackPack, 1, idArr.Length);
 			udpClient.Send (ackPack, ackPack.Length, groupEP);
 			ackedPackets.Add(new AckedPacket { ID = id, ElapsedTime = 0 });
 		}
@@ -85,15 +65,7 @@ namespace StyrServer
 
 						case (byte)PacketType.Connection:
 							if (receivedPacket.Length == 3) {
-								byte[] idArr = new byte[2];
-								idArr [0] = receivedPacket [1];
-								idArr [1] = receivedPacket [2];
-
-								if (BitConverter.IsLittleEndian) {
-									Array.Reverse (idArr);
-								}
-
-								ushort id = BitConverter.ToUInt16 (idArr, 0);
+								ushort id = PacketConverter.GetUShort(receivedPacket, 1);
 
 								Debug.WriteLine ("Connection received from {0}:{1}", groupEP.Address, groupEP.Port);
 								if (!ackedPackets.Exists (p => p.ID == id)) {
@@ -106,34 +78,13 @@ namespace StyrServer
 
 						case (byte)PacketType.MouseMovement:
 							if (connectedClients.Exists (p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 9) {
-								byte[] xArr = new byte[4];
-								byte[] yArr = new byte[4];
-
-								Array.Copy (receivedPacket, 1, xArr, 0, 4);
-								Array.Copy (receivedPacket, 5, yArr, 0, 4);
-
-								if (BitConverter.IsLittleEndian) {
-									Array.Reverse (xArr);
-									Array.Reverse (yArr);
-								}
-
-								Debug.WriteLine ("X: {0}, Y: {1}", BitConverter.ToSingle (xArr, 0), BitConverter.ToSingle (yArr, 0));
-								mouse.RelativeMove (BitConverter.ToSingle (xArr, 0), BitConverter.ToSingle (yArr, 0));
+								mouse.RelativeMove (PacketConverter.GetFloat(receivedPacket, 1), PacketConverter.GetFloat(receivedPacket, 5));
 							}
 							break;
 
 						case (byte)PacketType.MouseLeftClick:
 							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
-
-								byte[] idArr = new byte[2];
-								idArr [0] = receivedPacket [1];
-								idArr [1] = receivedPacket [2];
-
-								if (BitConverter.IsLittleEndian) {
-									Array.Reverse (idArr);
-								}
-
-								ushort id = BitConverter.ToUInt16 (idArr, 0);
+								ushort id = PacketConverter.GetUShort(receivedPacket, 1);
 								if (!ackedPackets.Exists (p => p.ID == id)) {
 									Debug.WriteLine ("Click!");
 									mouse.LeftButtonClick ();

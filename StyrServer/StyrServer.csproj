@@ -66,6 +66,9 @@
     <Compile Include="Client.cs" />
     <Compile Include="Input\IMouseDriver.cs" />
     <Compile Include="Input\MouseDriverOSX.cs" />
+    <Compile Include="PacketType.cs" />
+    <Compile Include="AckedPacket.cs" />
+    <Compile Include="PacketConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
