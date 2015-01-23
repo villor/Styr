@@ -8,6 +8,7 @@ namespace StyrClient.Network
 		Offer,
 		ConnectionReq,
 		Ack,
+		Ping,
 		AccessDenied,
 		MouseMovement,
 		MouseLeftClick

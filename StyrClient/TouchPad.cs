@@ -15,7 +15,7 @@ namespace StyrClient
 		public event OnDoubleTapEventHandler DoubleTapped;
 
 		public void OnMove(float x, float y) {
-			Console.WriteLine ("OnScroll x:{0} y:{1}", x, y);
+			//Console.WriteLine ("OnScroll x:{0} y:{1}", x, y);
 			if (Moved != null) {
 				Moved (x, y);
 			}

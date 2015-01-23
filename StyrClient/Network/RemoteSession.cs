@@ -7,8 +7,12 @@ using System.Threading;
 
 namespace StyrClient.Network
 {
+	public delegate void onSessionTimeoutEventHandler ();
+
 	public class RemoteSession
 	{
+		public event onSessionTimeoutEventHandler Timeout;
+
 		private UdpClient udpClient;
 		private IPEndPoint remoteEndPoint;
 		private List<ReliablePacket> sentPackList;
@@ -21,11 +25,11 @@ namespace StyrClient.Network
 
 			Reconnect (); // <----- Temporary, need try or some shit
 
-			Thread receiverLoop = new Thread (() => {
+			Thread backgroundLoop = new Thread (() => {
 				Debug.WriteLine("receiverLoop is live!");
 				receiveResendRemove ();
 			});
-			receiverLoop.Start ();
+			backgroundLoop.Start ();
 		}
 
 		public RemoteSession (IPAddress ipAddress) : this (new IPEndPoint (ipAddress, 1337))
@@ -76,6 +80,11 @@ namespace StyrClient.Network
 			sendReliablePacket (packet);
 		}
 
+		public void ping(){
+			byte [] packet = {(byte)PacketType.Ping };
+			sendReliablePacket (packet);
+		}
+
 		private void sendReliablePacket (byte[] packet, ushort id = 0)
 		{
 			Random rnd = new Random ();
@@ -108,9 +117,16 @@ namespace StyrClient.Network
 			udpClient.Send (packet, packet.Length, remoteEndPoint);
 		}
 
+
+
 		private void receiveResendRemove ()
 		{
 			Stopwatch loopTime = new Stopwatch ();
+			Stopwatch pingTimer = new Stopwatch ();
+			Stopwatch timeoutTimer = new Stopwatch ();
+			pingTimer.Start ();
+			timeoutTimer.Start ();
+		
 			while (true) {
 
 				if (udpClient.Available > 0) {
@@ -119,6 +135,7 @@ namespace StyrClient.Network
 					if (receivedPacket.Length != 0) {
 						if (receivedPacket [0] == (byte)PacketType.Ack) {
 							Debug.WriteLine ("Ack received");
+							timeoutTimer.Restart ();
 
 							byte[] idArr = new byte[2];
 							idArr [0] = receivedPacket [1];
@@ -143,8 +160,6 @@ namespace StyrClient.Network
 					}
 				}
 
-
-
 				loopTime.Stop ();
 				//Debug.WriteLine (loopTime.Elapsed.TotalMilliseconds);
 				for (int i = sentPackList.Count - 1; i >= 0; i--){
@@ -160,6 +175,21 @@ namespace StyrClient.Network
 					}
 				}
 				loopTime.Restart();
+
+				if (pingTimer.Elapsed.TotalSeconds > 2) {
+					ping ();
+					Debug.WriteLine ("Ping sent");
+					pingTimer.Restart ();
+				}
+
+				if (timeoutTimer.Elapsed.TotalSeconds > 10) {
+					if (Timeout != null) {
+						Timeout ();
+						Debug.WriteLine ("Session timed out");
+					}
+
+					break;
+				}
 
 				Thread.Sleep (1);
 
