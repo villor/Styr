@@ -24,6 +24,7 @@ namespace StyrClient.Droid
 			if (LongPress != null) {
 				LongPress (e);
 			}
+			//Console.WriteLine ("OnLongPress");
 			base.OnLongPress (e);
 		}
 
@@ -32,6 +33,7 @@ namespace StyrClient.Droid
 			if (DoubleTap != null) {
 				DoubleTap (e);
 			}
+			//Console.WriteLine ("OnDoubleTap");
 			return base.OnDoubleTap (e);
 		}
 
@@ -40,6 +42,7 @@ namespace StyrClient.Droid
 			if (DoubleTapEvent != null) {
 				DoubleTapEvent (e);
 			}
+			//Console.WriteLine ("OnDoubleTapEvent {0}", e.Action.ToString());
 			return base.OnDoubleTapEvent (e);
 		}
 
@@ -48,6 +51,7 @@ namespace StyrClient.Droid
 			if (SingleTapUp != null) {
 				SingleTapUp (e);
 			}
+			//Console.WriteLine ("OnSingleTap");
 			return base.OnSingleTapUp (e);
 		}
 
@@ -56,6 +60,7 @@ namespace StyrClient.Droid
 			if (Down != null) {
 				Down (e);
 			}
+			//Console.WriteLine ("OnDown");
 			return base.OnDown (e);
 		}
 
@@ -64,6 +69,7 @@ namespace StyrClient.Droid
 			if (Fling != null) {
 				Fling (e1, e2, velocityX, velocityY);
 			}
+			//Console.WriteLine ("OnFling");
 			return base.OnFling (e1, e2, velocityX, velocityY);
 		}
 
@@ -72,6 +78,7 @@ namespace StyrClient.Droid
 			if (Scroll != null) {
 				Scroll (e1, e2, distanceX, distanceY);
 			}
+			//Console.WriteLine ("OnScroll");
 			return base.OnScroll (e1, e2, distanceX, distanceY);
 		}
 
@@ -80,6 +87,8 @@ namespace StyrClient.Droid
 			if (ShowPress != null) {
 				ShowPress (e);
 			}
+			//Console.WriteLine ("OnShowPress");
+
 			base.OnShowPress (e);
 		}
 
@@ -88,6 +97,7 @@ namespace StyrClient.Droid
 			if (SingleTapConfirmed != null) {
 				SingleTapConfirmed (e);
 			}
+			//Console.WriteLine ("OnSingleTapConfirmed");
 			return base.OnSingleTapConfirmed (e);
 		}
 	}

@@ -12,7 +12,7 @@ namespace StyrClient
 
 	public class MainRemotePage : ContentPage
 	{
-		//Class members
+
 		private RemoteSession remoteSession;
 
 		public MainRemotePage(ref RemoteSession session)
@@ -50,8 +50,18 @@ namespace StyrClient
 				//Debug.WriteLine ("Sending MouseMovement to remote connected server");
 			};
 
-			touchPad.SingleTapped += () => {
+			touchPad.LeftClick += () => {
 				remoteSession.SendLeftClick();
+				//Debug.WriteLine("Sending MouseLeftClick to remote connected server");
+			};
+
+			touchPad.LeftUp += () => {
+				remoteSession.SendLeftUp();
+				//Debug.WriteLine("Sending MouseLeftClick to remote connected server");
+			};
+
+			touchPad.LeftDown += () => {
+				remoteSession.SendLeftDown();
 				//Debug.WriteLine("Sending MouseLeftClick to remote connected server");
 			};
 

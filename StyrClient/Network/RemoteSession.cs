@@ -16,12 +16,14 @@ namespace StyrClient.Network
 		private UdpClient udpClient;
 		private IPEndPoint remoteEndPoint;
 		private List<ReliablePacket> sentPackList;
+		private ushort reliablePacketID;
 
 		public RemoteSession (IPEndPoint endPoint)
 		{
 			remoteEndPoint = endPoint;
 			udpClient = new UdpClient ();
 			sentPackList = new List<ReliablePacket> ();
+			reliablePacketID = 0;
 
 			Reconnect (); // <----- Temporary, need try or some shit
 
@@ -39,7 +41,7 @@ namespace StyrClient.Network
 		public bool Reconnect ()
 		{
 			// sending connection request
-			byte[] packet = { (byte)PacketType.ConnectionReq };
+			byte[] packet = { (byte)PacketType.Connection };
 			sendReliablePacket (packet);
 
 			// receiving connection reply
@@ -80,16 +82,28 @@ namespace StyrClient.Network
 			sendReliablePacket (packet);
 		}
 
-		public void ping(){
+		public void SendLeftUp ()
+		{
+			byte[] packet = { (byte)PacketType.MouseLeftUp };
+			sendReliablePacket (packet);
+		}
+
+		public void SendLeftDown ()
+		{
+			byte[] packet = { (byte)PacketType.MouseLeftDown };
+			sendReliablePacket (packet);
+		}
+
+		public void ping ()
+		{
 			byte [] packet = {(byte)PacketType.Ping };
 			sendReliablePacket (packet);
 		}
 
-		private void sendReliablePacket (byte[] packet, ushort id = 0)
+		private void sendReliablePacket (byte[] packet, bool isNewPacket = true, ushort id = 0)
 		{
-			Random rnd = new Random ();
-			if (id == 0) {
-				id = (ushort)rnd.Next (1, ushort.MaxValue);
+			if (isNewPacket) {
+				id = reliablePacketID++;
 
 				sentPackList.Add (new ReliablePacket {
 					Packet = packet,
@@ -134,7 +148,7 @@ namespace StyrClient.Network
 
 					if (receivedPacket.Length != 0) {
 						if (receivedPacket [0] == (byte)PacketType.Ack) {
-							Debug.WriteLine ("Ack received");
+							//Debug.WriteLine ("Ack received");
 							timeoutTimer.Restart ();
 
 							byte[] idArr = new byte[2];
@@ -149,7 +163,7 @@ namespace StyrClient.Network
 							for (int i = sentPackList.Count - 1; i >= 0; i--) {
 								if (sentPackList[i].ID == idCtrl) {
 									sentPackList.RemoveAt(i);
-									Debug.WriteLine ("Tar bort ett jävla packe nu då");
+									//Debug.WriteLine ("Tar bort ett jävla packe nu då");
 								}
 							}
 						} else if (receivedPacket [0] == (byte)PacketType.AccessDenied) {
@@ -170,7 +184,7 @@ namespace StyrClient.Network
 						sentPackList.Remove (sentPackList[i]);	// <------------------ Sessionen ska avbrytas här?
 					} else if (sentPackList[i].SendTimer > 75) {
 						Debug.WriteLine ("Resending packet with elapsed time: {0}", sentPackList[i].ElapsedTime);
-						sendReliablePacket (sentPackList[i].Packet, sentPackList[i].ID);
+						sendReliablePacket (sentPackList[i].Packet, false, sentPackList[i].ID);
 						sentPackList[i].SendTimer = 0;
 					}
 				}

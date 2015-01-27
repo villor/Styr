@@ -6,12 +6,17 @@ namespace StyrClient.Network
 	{
 		Discovery,
 		Offer,
-		ConnectionReq,
+		Connection,
 		Ack,
 		Ping,
 		AccessDenied,
 		MouseMovement,
-		MouseLeftClick
+		MouseLeftClick,
+		MouseLeftUp,
+		MouseLeftDown,
+		MouseRightClick,
+		MouseRightUp,
+		MouseRightDown
 	}
 }
 

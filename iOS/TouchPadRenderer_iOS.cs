@@ -51,11 +51,12 @@ namespace StyrClient.iOS
 					CoreGraphics.CGPoint lastPos = new CoreGraphics.CGPoint(-1, -1);
 
 					singleTapGestureRecognizer = new UITapGestureRecognizer (() => {
-						tp.OnSingleTap();
+						tp.OnLeftClick();
 					});
 
 					doubleTapGestureRecognizer = new UITapGestureRecognizer (() => {
-						tp.OnDoubleTap();
+						tp.OnLeftClick();
+						tp.OnLeftClick();
 					});
 
 					singleTapGestureRecognizer.NumberOfTapsRequired = 1;

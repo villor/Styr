@@ -18,6 +18,7 @@ namespace StyrClient.Droid
 		{
 			listener = new TouchPadGestureListener ();
 			detector = new GestureDetector (listener);
+			detector.IsLongpressEnabled = false;
 		}
 
 		protected override void OnElementChanged (ElementChangedEventArgs<BoxView> e)
@@ -34,9 +35,39 @@ namespace StyrClient.Droid
 
 				if (e.NewElement != null) {
 					TouchPad tp = (TouchPad)e.NewElement;
+					bool scrollSinceLastDown = false;
 
-					listener.SingleTapUp += (e2) => {
-						tp.OnSingleTap();
+					listener.SingleTapUp += (e1) => {
+						tp.OnLeftDown();
+					};
+
+					listener.SingleTapConfirmed += (e1) => {
+						tp.OnLeftUp();
+					};
+
+
+					listener.DoubleTapEvent += (e1) => {
+						switch (e1.Action)
+						{
+						case MotionEventActions.Down:
+							scrollSinceLastDown = false;
+							break;
+
+						case MotionEventActions.Move:
+							scrollSinceLastDown = true;
+							if (e1.HistorySize > 2){
+								tp.OnMove (e1.GetX() - e1.GetHistoricalX(e1.HistorySize - 2), e1.GetY() - e1.GetHistoricalY(e1.HistorySize - 2));
+							}
+							break;
+
+						case MotionEventActions.Up:
+							tp.OnLeftUp();
+							if (scrollSinceLastDown == false){
+								tp.OnLeftClick();
+							}
+							Console.WriteLine(scrollSinceLastDown.ToString());
+							break;
+						}
 					};
 
 					listener.Scroll += (e1, e2, distanceX, distanceY) => {
