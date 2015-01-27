@@ -100,8 +100,30 @@ namespace StyrServer
 							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
 								ushort id = PacketConverter.GetUShort(receivedPacket, 1);
 								if (!ackedPackets.Exists (p => p.ID == id)) {
-									Debug.WriteLine ("Click!");
+									Debug.WriteLine ("LeftClick!");
 									mouse.LeftButtonClick ();
+								}
+								sendAck (id);
+							}
+							break;
+
+						case (byte)PacketType.MouseLeftDown:
+							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
+								ushort id = PacketConverter.GetUShort (receivedPacket, 1);
+								if (!ackedPackets.Exists (p => p.ID == id)) {
+									Debug.WriteLine ("LeftDown!");
+									mouse.LeftButtonDown ();
+								}
+								sendAck (id);
+							}
+							break;
+
+						case (byte)PacketType.MouseLeftUp:
+							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
+								ushort id = PacketConverter.GetUShort (receivedPacket, 1);
+								if (!ackedPackets.Exists (p => p.ID == id)) {
+									Debug.WriteLine ("LeftUp!");
+									mouse.LeftButtonUp ();
 								}
 								sendAck (id);
 							}
