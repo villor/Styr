@@ -32,7 +32,12 @@ namespace StyrServer
 
 			Running = true;
 
-			mouse = new MouseDriverOSX ();
+			if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
+				mouse = new MouseDriverWindows();
+			}
+			else {
+				mouse = new MouseDriverOSX();
+			}
 
 			Thread mainThread = new Thread (ServerLoop);
 			mainThread.Start ();

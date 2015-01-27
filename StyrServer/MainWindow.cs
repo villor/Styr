@@ -20,7 +20,7 @@ public partial class MainWindow: Gtk.Window
 	public MainWindow () : base (Gtk.WindowType.Toplevel)
 	{
 		Build ();
-		Console.SetOut (new Logger (textview1));
+		//Console.SetOut (new Logger (textview1));
 		server = new Server (1337);
 	}
 
