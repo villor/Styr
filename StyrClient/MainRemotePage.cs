@@ -19,7 +19,7 @@ namespace StyrClient
 		{
 			remoteSession = session;
 			/*remoteSession.Timeout += async () => {
-				SendBackButtonPressed();				// <--------- Not tested
+				SendBackButtonPressed();				// <--------- Not tested at all
 				await Navigation.PopModalAsync();
 			};*/
 			BuildPageGUI ();
