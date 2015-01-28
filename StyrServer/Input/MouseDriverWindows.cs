@@ -91,7 +91,7 @@ namespace StyrServer.Input
 
 		public MouseDriverWindows()
 		{
-			if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+			if (PlatformDetector.CurrentPlatform != PlatformID.Win32NT)
 			{
 				throw new PlatformNotSupportedException("Can't run Windows-specific code on this platform!");
 			}

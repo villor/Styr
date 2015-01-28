@@ -65,8 +65,9 @@ namespace StyrServer.Input
 
 		public MouseDriverOSX ()
 		{
-			// TODO: Throw exception when not on OSX
-			// throw new PlatformNotSupportedException("<message>");
+			if (PlatformDetector.CurrentPlatform != PlatformID.MacOSX) {
+				throw new PlatformNotSupportedException ("Can't run OSX-specific code on this platform!");
+			}
 		}
 
 		public void MoveTo (float x, float y)

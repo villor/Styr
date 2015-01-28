@@ -70,6 +70,7 @@
     <Compile Include="PacketType.cs" />
     <Compile Include="AckedPacket.cs" />
     <Compile Include="PacketConverter.cs" />
+    <Compile Include="PlatformDetector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

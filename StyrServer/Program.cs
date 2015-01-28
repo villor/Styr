@@ -8,11 +8,12 @@ namespace StyrServer
 	{
 		public static void Main (string[] args)
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-			{
-				FixGTKWindows();
-			}
+			Console.WriteLine ("Running on platform: {0}", Enum.GetName (typeof(PlatformID), PlatformDetector.CurrentPlatform));
 
+			if (PlatformDetector.CurrentPlatform == PlatformID.Win32NT) {
+				FixGTKWindows ();
+			}
+				
 			Application.Init ();
 			MainWindow win = new MainWindow ();
 			win.Show ();

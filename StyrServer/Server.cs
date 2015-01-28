@@ -32,7 +32,7 @@ namespace StyrServer
 
 			Running = true;
 
-			if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
+			if (PlatformDetector.CurrentPlatform == PlatformID.Win32NT) {
 				mouse = new MouseDriverWindows();
 			}
 			else {
