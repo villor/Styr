@@ -45,19 +45,22 @@ namespace StyrClient.Droid
 						tp.OnLeftUp();
 					};
 
-
+					float lastY = 0;
+					float lastX = 0;
 					listener.DoubleTapEvent += (e1) => {
 						switch (e1.Action)
 						{
 						case MotionEventActions.Down:
+							lastX = e1.GetX();
+							lastY = e1.GetY();
 							scrollSinceLastDown = false;
 							break;
 
 						case MotionEventActions.Move:
 							scrollSinceLastDown = true;
-							if (e1.HistorySize > 2){
-								tp.OnMove (e1.GetX() - e1.GetHistoricalX(e1.HistorySize - 2), e1.GetY() - e1.GetHistoricalY(e1.HistorySize - 2));
-							}
+							tp.OnMove (e1.GetX() - lastX, e1.GetY() - lastY);
+							lastX = e1.GetX();
+							lastY = e1.GetY();
 							break;
 
 						case MotionEventActions.Up:

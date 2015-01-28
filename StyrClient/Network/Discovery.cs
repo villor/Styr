@@ -18,7 +18,8 @@ namespace StyrClient.Network
 
 		public void DiscoverHosts()
 		{
-			IPAddress remoteAddress = IPAddress.Broadcast; // 81.224.126.151
+
+			IPAddress remoteAddress = IPAddress.Parse("10.7.20.174"); // 81.224.126.151
 			IPEndPoint remoteEndPoint = new IPEndPoint (remoteAddress, 1337);
 			UdpClient udpClient = new UdpClient ();
 

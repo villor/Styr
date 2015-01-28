@@ -18,10 +18,12 @@ namespace StyrClient
 		public MainRemotePage(ref RemoteSession session)
 		{
 			remoteSession = session;
-			/*remoteSession.Timeout += async () => {
-				SendBackButtonPressed();				// <--------- Not tested at all
-				await Navigation.PopModalAsync();
-			};*/
+
+			remoteSession.Timeout += async () => {
+				Console.WriteLine("Server has stopped responding");
+				SendBackButtonPressed();				
+				//await Navigation.PopAsync();   // <--------- Balle
+			};
 			BuildPageGUI ();
 		}
 
