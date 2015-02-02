@@ -60,14 +60,28 @@ namespace StyrServer.Input
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
 		private static extern CGPoint CGEventGetLocation (IntPtr e);
 
+		[DllImport("ApplicationServices.framework/ApplicationServices")]
+		private static extern uint CGDisplayPixelsHigh (IntPtr screenId);
+
+		[DllImport("ApplicationServices.framework/ApplicationServices")]
+		private static extern uint CGDisplayPixelsWide (IntPtr screenId);
+
+		[DllImport("ApplicationServices.framework/ApplicationServices")]
+		private static extern IntPtr CGMainDisplayID ();
+
 		private bool rightButtonDown = false;
 		private bool leftButtonDown = false;
+
+		private uint screenWidth;
+		private uint screenHeight;
 
 		public MouseDriverOSX ()
 		{
 			if (PlatformDetector.CurrentPlatform != PlatformID.MacOSX) {
 				throw new PlatformNotSupportedException ("Can't run OSX-specific code on this platform!");
 			}
+			screenWidth = CGDisplayPixelsWide (CGMainDisplayID ());
+			screenHeight = CGDisplayPixelsHigh (CGMainDisplayID ());
 		}
 
 		public void MoveTo (float x, float y)
@@ -83,6 +97,16 @@ namespace StyrServer.Input
 			}
 
 			CGPoint p = new CGPoint { X = x, Y = y };
+
+			if (p.X > screenWidth - 1)
+				p.X = screenWidth - 1;
+			if (p.X < 0)
+				p.X = 0;
+			if (p.Y > screenHeight - 1)
+				p.Y = screenHeight - 1;
+			if (p.Y < 0)
+				p.Y = 0;
+				
 			IntPtr move = CGEventCreateMouseEvent (
 				IntPtr.Zero, eventType,
 				p, CGMouseButton.kCGMouseButtonLeft
