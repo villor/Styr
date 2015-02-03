@@ -1,5 +1,6 @@
 ﻿using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms;
+using System.Diagnostics;
 using StyrClient;
 using StyrClient.Droid;
 using Android.Views;
@@ -7,10 +8,14 @@ using System;
 
 [assembly: ExportRenderer (typeof(TouchPad), typeof(TouchPadRenderer_Droid))]
 
+public delegate void OnRightClickEventHandler(MotionEvent e);
+
 namespace StyrClient.Droid
 {
 	public class TouchPadRenderer_Droid : BoxRenderer
 	{
+		public event OnRightClickEventHandler RightClick;
+
 		private readonly TouchPadGestureListener listener;
 		private readonly GestureDetector detector;
 
@@ -21,6 +26,8 @@ namespace StyrClient.Droid
 			detector.IsLongpressEnabled = false;
 		}
 
+
+			
 		protected override void OnElementChanged (ElementChangedEventArgs<BoxView> e)
 		{
 			base.OnElementChanged (e);
@@ -43,6 +50,10 @@ namespace StyrClient.Droid
 
 					listener.SingleTapConfirmed += (e1) => {
 						tp.OnLeftUp();
+					};
+
+					RightClick += () => {
+						tp.OnRightClick();
 					};
 
 					float lastY = 0;
@@ -82,6 +93,28 @@ namespace StyrClient.Droid
 
 		void HandleTouch (object sender, TouchEventArgs e)
 		{
+			/*
+			* Det här är kod för att hantera multi touch Right click,
+			* som inte hanteras i listener-klassen.
+			*/
+			Stopwatch rightClickTimer = new Stopwatch ();
+			//Console.WriteLine("1 Nu är jag här, och här är bra");
+			switch (e.Event.Action) 
+			{
+			case MotionEventActions.PointerDown:
+				rightClickTimer.Restart ();
+				break;
+			case MotionEventActions.PointerUp:
+				//Console.WriteLine("2 Nu är jag här, och här är bra");
+				if (rightClickTimer.Elapsed.TotalMilliseconds < 100) {
+					//Console.WriteLine("3 Nu är jag här, och här är bra");
+					RightClick ();
+					rightClickTimer.Reset ();
+				}
+				break;
+
+			}
+
 			detector.OnTouchEvent (e.Event);
 		}
 
@@ -89,6 +122,8 @@ namespace StyrClient.Droid
 		{
 			detector.OnTouchEvent (e.Event);
 		}
+
 	}
+		
 }
 

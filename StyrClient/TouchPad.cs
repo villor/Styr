@@ -16,7 +16,7 @@ namespace StyrClient
 	public delegate void OnRightUpEventHandler ();
 
 	public class TouchPad : BoxView {
-
+	
 		public event OnMoveEventHandler Moved;
 		public event OnLeftClickEventHandler LeftClick;
 		public event OnLeftDownEventHandler LeftDown;
@@ -66,8 +66,9 @@ namespace StyrClient
 		}
 
 		public void OnRightClick(){
-			if (RightUp != null) {
-				RightUp ();
+			Console.WriteLine("OnRightClick");
+			if (RightClick != null) {
+				RightClick ();
 			}
 		}
 	}

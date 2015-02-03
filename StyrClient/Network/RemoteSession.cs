@@ -94,6 +94,12 @@ namespace StyrClient.Network
 			sendReliablePacket (packet);
 		}
 
+		public void SendRightClick ()
+		{
+			byte[] packet = { (byte)PacketType.MouseRightClick };
+			sendReliablePacket (packet);
+		}
+
 		public void ping ()
 		{
 			byte [] packet = {(byte)PacketType.Ping };

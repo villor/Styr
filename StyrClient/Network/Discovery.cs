@@ -9,17 +9,19 @@ namespace StyrClient.Network
 {
 	public class Discovery
 	{
-		ObservableCollection<StyrServer> discoveredServers;
+		ObservableCollection<StyrServer> DiscoveredServers;
+		//DiscoveryPage ParentPage;
 
 		public Discovery (ref ObservableCollection<StyrServer> servers)
 		{
-			discoveredServers = servers;
+			DiscoveredServers = servers;
+
 		}
 
 		public void DiscoverHosts()
 		{
 
-			IPAddress remoteAddress = IPAddress.Parse("10.7.20.174"); // 81.224.126.151
+			IPAddress remoteAddress = IPAddress.Parse("255.255.255.255"); // 81.224.126.151
 			IPEndPoint remoteEndPoint = new IPEndPoint (remoteAddress, 1337);
 			UdpClient udpClient = new UdpClient ();
 
@@ -29,7 +31,7 @@ namespace StyrClient.Network
 				remoteEndPoint.Address, remoteEndPoint.Port);
 
 			UdpClient threadClient = udpClient;
-			ObservableCollection<StyrServer> threadList = discoveredServers;
+			ObservableCollection<StyrServer> threadList = DiscoveredServers;
 
 			Thread offerListener = new Thread (() => {
 				System.Diagnostics.Stopwatch offersTimer = new System.Diagnostics.Stopwatch ();

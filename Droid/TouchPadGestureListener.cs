@@ -60,7 +60,7 @@ namespace StyrClient.Droid
 			if (Down != null) {
 				Down (e);
 			}
-			//Console.WriteLine ("OnDown");
+			//Console.WriteLine ("OnDown " + e.PointerCount);
 			return base.OnDown (e);
 		}
 
@@ -100,5 +100,6 @@ namespace StyrClient.Droid
 			//Console.WriteLine ("OnSingleTapConfirmed");
 			return base.OnSingleTapConfirmed (e);
 		}
+			
 	}
 }

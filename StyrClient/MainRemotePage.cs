@@ -19,7 +19,7 @@ namespace StyrClient
 		{
 			remoteSession = session;
 
-			remoteSession.Timeout += async () => {
+			remoteSession.Timeout += () => {
 				Console.WriteLine("Server has stopped responding");
 				SendBackButtonPressed();				
 				//await Navigation.PopAsync();   // <--------- Balle
@@ -65,6 +65,11 @@ namespace StyrClient
 			touchPad.LeftDown += () => {
 				remoteSession.SendLeftDown();
 				//Debug.WriteLine("Sending MouseLeftClick to remote connected server");
+			};
+
+			touchPad.RightClick += () => {
+				remoteSession.SendRightClick();
+				Debug.WriteLine("Sending MouseRightClick to remote connected server");
 			};
 
 			Content = new StackLayout {
