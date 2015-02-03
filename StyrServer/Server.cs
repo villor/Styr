@@ -129,6 +129,17 @@ namespace StyrServer
 							}
 							break;
 
+						case (byte)PacketType.MouseRightClick:
+							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
+								ushort id = PacketConverter.GetUShort(receivedPacket, 1);
+								if (!ackedPackets.Exists (p => p.ID == id)) {
+									Debug.WriteLine ("RightClick!");
+									mouse.RightButtonClick ();
+								}
+								sendAck (id);
+							}
+							break;
+
 						default:
 							Debug.WriteLine ("Unknown packet received from {0}:\n0x{1}", groupEP.Address, BitConverter.ToString (receivedPacket).Replace ("-", string.Empty));
 							break;
