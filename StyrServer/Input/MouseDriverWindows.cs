@@ -46,7 +46,7 @@ namespace StyrServer.Input
 		{
 			public int dx;
 			public int dy;
-			public uint mouseData;
+			public int mouseData;
 			public MouseEventFlags dwFlags;
 			public uint time;
 			public IntPtr dwExtraInfo;
@@ -65,7 +65,8 @@ namespace StyrServer.Input
 			MOUSEEVENTF_XUP = 0x0100,
 			MOUSEEVENTF_WHEEL = 0x0800,
 			MOUSEEVENTF_VIRTUALDESK = 0x4000,
-			MOUSEEVENTF_ABSOLUTE = 0x8000
+			MOUSEEVENTF_ABSOLUTE = 0x8000,
+			MOUSEEVENTF_HWHEEL = 0x01000
 		}
 		enum SendInputEventType : int
 		{
@@ -168,7 +169,23 @@ namespace StyrServer.Input
 
 		public void Scroll(float x, float y)
 		{
-			throw new NotImplementedException ();
+			INPUT mouseInput = new INPUT();
+			mouseInput.type = SendInputEventType.InputMouse;
+			mouseInput.mkhi.mi.dwFlags = MouseEventFlags.MOUSEEVENTF_WHEEL;
+			mouseInput.mkhi.mi.dx = 0;
+			mouseInput.mkhi.mi.dy = 0;
+			mouseInput.mkhi.mi.mouseData = (int)-y;
+
+			SendInput(1, ref mouseInput, Marshal.SizeOf(new INPUT()));
+
+			mouseInput = new INPUT();
+			mouseInput.type = SendInputEventType.InputMouse;
+			mouseInput.mkhi.mi.dwFlags = MouseEventFlags.MOUSEEVENTF_HWHEEL;
+			mouseInput.mkhi.mi.dx = 0;
+			mouseInput.mkhi.mi.dy = 0;
+			mouseInput.mkhi.mi.mouseData = (int)x;
+
+			SendInput(1, ref mouseInput, Marshal.SizeOf(new INPUT()));
 		}
 	}
 }
