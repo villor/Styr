@@ -96,6 +96,12 @@ namespace StyrServer
 							}
 							break;
 
+						case (byte)PacketType.MouseScroll:
+							if (connectedClients.Exists (p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 9) {
+								mouse.Scroll (PacketConverter.GetFloat(receivedPacket, 1), PacketConverter.GetFloat(receivedPacket, 5));
+							}
+							break;
+
 						case (byte)PacketType.MouseLeftClick:
 							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
 								ushort id = PacketConverter.GetUShort(receivedPacket, 1);

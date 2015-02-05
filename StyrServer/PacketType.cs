@@ -10,6 +10,7 @@ namespace StyrServer
 		Ping,
 		AccessDenied,
 		MouseMovement,
+		MouseScroll,
 		MouseLeftClick,
 		MouseLeftUp,
 		MouseLeftDown,

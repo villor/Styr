@@ -39,6 +39,11 @@ namespace StyrServer.Input
 			kCGAnnotatedSessionEventTap 
 		};
 
+		enum CGScrollEventUnit : uint {
+			kCGScrollEventUnitPixel = 0,
+			kCGScrollEventUnitLine = 1
+		};
+
 		[StructLayout(LayoutKind.Sequential)]
 		struct CGPoint {
 			public float X;
@@ -68,6 +73,9 @@ namespace StyrServer.Input
 
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
 		private static extern IntPtr CGMainDisplayID ();
+
+		[DllImport("ApplicationServices.framework/ApplicationServices")]
+		private static extern IntPtr CGEventCreateScrollWheelEvent(IntPtr source, CGScrollEventUnit units, uint wheelCount, int wheel1, int wheel2);
 
 		private bool rightButtonDown = false;
 		private bool leftButtonDown = false;
@@ -196,6 +204,19 @@ namespace StyrServer.Input
 		{
 			RightButtonDown ();
 			RightButtonUp ();
+		}
+
+		public void Scroll(float x, float y)
+		{
+			var scroll = CGEventCreateScrollWheelEvent (
+				IntPtr.Zero,
+				CGScrollEventUnit.kCGScrollEventUnitPixel,
+				2,
+				(int)-y,
+				(int)-x
+			);
+			CGEventPost(CGEventTapLocation.kCGHIDEventTap, scroll);
+			CFRelease(scroll);
 		}
 	}
 }

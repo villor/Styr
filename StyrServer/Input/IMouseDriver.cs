@@ -27,6 +27,8 @@ namespace StyrServer.Input
 		void RightButtonDown();
 		void RightButtonUp();
 		void RightButtonClick();
+
+		void Scroll(float x, float y);
 	}
 }
 

@@ -165,6 +165,11 @@ namespace StyrServer.Input
 			RightButtonDown();
 			RightButtonUp();
 		}
+
+		public void Scroll(float x, float y)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
 
