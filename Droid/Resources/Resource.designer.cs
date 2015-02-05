@@ -56,6 +56,22 @@ namespace StyrClient.Droid
 			{
 			}
 		}
+		
+		public partial class Style
+		{
+			
+			// aapt resource value: 0x7f030000
+			public const int StyrTheme = 2130903040;
+			
+			static Style()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Style()
+			{
+			}
+		}
 	}
 }
 #pragma warning restore 1591

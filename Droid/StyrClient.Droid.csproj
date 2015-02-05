@@ -75,12 +75,15 @@
   <ItemGroup>
     <Folder Include="Resources\layout\" />
     <Folder Include="Resources\values\" />
+    <Folder Include="Resources\values-v21\" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\icon.png" />
     <AndroidResource Include="Resources\drawable-hdpi\icon.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\icon.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
+    <AndroidResource Include="Resources\values-v21\styles.xml" />
+    <AndroidResource Include="Resources\values\styles.xml" />
   </ItemGroup>
   <Import Project="..\StyrClient\StyrClient.projitems" Label="Shared" Condition="Exists('..\StyrClient\StyrClient.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
