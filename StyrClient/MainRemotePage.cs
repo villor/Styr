@@ -52,6 +52,10 @@ namespace StyrClient
 				//Debug.WriteLine ("Sending MouseMovement to remote connected server");
 			};
 
+			touchPad.Scrolled += (float x, float y) => {
+				remoteSession.SendMouseScroll(x, y);
+			};
+
 			touchPad.LeftClick += () => {
 				remoteSession.SendLeftClick();
 				//Debug.WriteLine("Sending MouseLeftClick to remote connected server");

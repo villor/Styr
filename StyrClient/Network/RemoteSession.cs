@@ -76,6 +76,23 @@ namespace StyrClient.Network
 			sendUnreliablePacket (packet);
 		}
 
+		public void SendMouseScroll (float x, float y)
+		{
+			byte[] packet = new byte[9];
+			byte[] xArray = BitConverter.GetBytes (x);
+			byte[] yArray = BitConverter.GetBytes (y);
+			packet [0] = (byte)PacketType.MouseScroll;
+
+			if (BitConverter.IsLittleEndian) {
+				Array.Reverse (xArray);
+				Array.Reverse (yArray);
+			}
+
+			Array.Copy (xArray, 0, packet, 1, xArray.Length);
+			Array.Copy (yArray, 0, packet, 5, yArray.Length);
+			sendUnreliablePacket (packet);
+		}
+
 		public void SendLeftClick ()
 		{
 			byte[] packet = { (byte)PacketType.MouseLeftClick };

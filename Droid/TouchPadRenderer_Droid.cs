@@ -15,6 +15,7 @@ namespace StyrClient.Droid
 	public class TouchPadRenderer_Droid : BoxRenderer
 	{
 		public event OnRightClickEventHandler RightClick;
+		Stopwatch rightClickTimer = new Stopwatch ();
 
 		private readonly TouchPadGestureListener listener;
 		private readonly GestureDetector detector;
@@ -87,9 +88,14 @@ namespace StyrClient.Droid
 					listener.Scroll += (e1, e2, distanceX, distanceY) => {
 						tp.OnMove (-distanceX, -distanceY);
 					};
+
+					listener.TwoFingerScroll += (e1, e2, distanceX, distanceY) => {
+						tp.OnTwoFingerScroll (distanceX, distanceY);
+					};
 				}
 			}
 		}
+
 
 		void HandleTouch (object sender, TouchEventArgs e)
 		{
@@ -97,16 +103,18 @@ namespace StyrClient.Droid
 			* Det här är kod för att hantera multi touch Right click,
 			* som inte hanteras i listener-klassen.
 			*/
-			Stopwatch rightClickTimer = new Stopwatch ();
 			//Console.WriteLine("1 Nu är jag här, och här är bra");
 			switch (e.Event.Action) 
 			{
-			case MotionEventActions.PointerDown:
+			case MotionEventActions.Pointer2Down:
+				Console.WriteLine (e.Event.PointerCount);
+				Console.WriteLine ("Pointer2Down");
 				rightClickTimer.Restart ();
+				
 				break;
 			case MotionEventActions.PointerUp:
-				//Console.WriteLine("2 Nu är jag här, och här är bra");
-				if (rightClickTimer.Elapsed.TotalMilliseconds < 100) {
+				Console.WriteLine("PointerUp");
+				if (rightClickTimer.Elapsed.TotalMilliseconds < 250) {
 					//Console.WriteLine("3 Nu är jag här, och här är bra");
 					RightClick ();
 					rightClickTimer.Reset ();

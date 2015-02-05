@@ -16,6 +16,7 @@ namespace StyrClient.Droid
 		public event OnTouchEventHandler Down;
 		public event OnFlingEventHandler Fling;
 		public event OnScrollEventHandler Scroll;
+		public event OnScrollEventHandler TwoFingerScroll;
 		public event OnTouchEventHandler ShowPress;
 		public event OnTouchEventHandler SingleTapConfirmed;
 
@@ -75,8 +76,15 @@ namespace StyrClient.Droid
 
 		public override bool OnScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
 		{
-			if (Scroll != null) {
-				Scroll (e1, e2, distanceX, distanceY);
+			if (e2.PointerCount < 2) {
+				if (Scroll != null) {
+					Scroll (e1, e2, distanceX, distanceY);
+				}
+			} else if (e2.PointerCount == 2) {
+				// Console.WriteLine ("Nu är det två fingrar som rör sig");
+				if (TwoFingerScroll != null) {
+					TwoFingerScroll (e1, e2, distanceX, distanceY);
+				}
 			}
 			//Console.WriteLine ("OnScroll");
 			return base.OnScroll (e1, e2, distanceX, distanceY);

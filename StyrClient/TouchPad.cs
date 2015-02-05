@@ -18,6 +18,7 @@ namespace StyrClient
 	public class TouchPad : BoxView {
 	
 		public event OnMoveEventHandler Moved;
+		public event OnMoveEventHandler Scrolled;
 		public event OnLeftClickEventHandler LeftClick;
 		public event OnLeftDownEventHandler LeftDown;
 		public event OnLeftUpEventHandler LeftUp;
@@ -26,9 +27,16 @@ namespace StyrClient
 		public event OnRightUpEventHandler RightUp;
 
 		public void OnMove(float x, float y) {
-			Console.WriteLine ("OnScroll x:{0} y:{1}", x, y);
+			Console.WriteLine ("OnMove x:{0} y:{1}", x, y);
 			if (Moved != null) {
 				Moved (x, y);
+			}
+		}
+
+		public void OnTwoFingerScroll(float x, float y) {
+			Console.WriteLine ("OnTwoFingerScroll x:{0} y:{1}", x, y);
+			if (Scrolled != null) {
+				Scrolled (x, y);
 			}
 		}
 

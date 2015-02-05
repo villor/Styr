@@ -11,6 +11,7 @@ namespace StyrClient.Network
 		Ping,
 		AccessDenied,
 		MouseMovement,
+		MouseScroll,
 		MouseLeftClick,
 		MouseLeftUp,
 		MouseLeftDown,
