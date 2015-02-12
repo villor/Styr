@@ -16,6 +16,7 @@ namespace StyrServer
 		private IPEndPoint groupEP;
 
 		private IMouseDriver mouse;
+		private IKeyboardDriver keyboard;
 
 		private List<Client> connectedClients;
 		private List<AckedPacket> ackedPackets;
@@ -34,9 +35,11 @@ namespace StyrServer
 
 			if (PlatformDetector.CurrentPlatform == PlatformID.Win32NT) {
 				mouse = new MouseDriverWindows();
+				keyboard = new KeyboardDriverWindows ();
 			}
 			else {
 				mouse = new MouseDriverOSX();
+				keyboard = new KeyboardDriverOSX ();
 			}
 
 			Thread mainThread = new Thread (ServerLoop);
@@ -83,7 +86,6 @@ namespace StyrServer
 
 						case (byte)PacketType.Ping:
 							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
-								Debug.WriteLine ("Ping!");
 								ushort id = PacketConverter.GetUShort(receivedPacket, 1);
 								connectedClients.Find (p => p.EndPoint.Equals (groupEP)).TimeSinceLastPing = TimeSpan.Zero;
 								sendAck (id);
@@ -141,6 +143,29 @@ namespace StyrServer
 								if (!ackedPackets.Exists (p => p.ID == id)) {
 									Debug.WriteLine ("RightClick!");
 									mouse.RightButtonClick ();
+								}
+								sendAck (id);
+							}
+							break;
+
+						case (byte)PacketType.InputCharacter:
+							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 5) {
+								ushort id = PacketConverter.GetUShort(receivedPacket, 3);
+								if (!ackedPackets.Exists (p => p.ID == id)) {
+									char inputc = PacketConverter.GetChar (receivedPacket, 1);
+									Debug.WriteLine ("InputCharacter: '" + inputc + "'");
+									keyboard.InputChar (inputc);
+								}
+								sendAck (id);
+							}
+							break;
+
+						case (byte)PacketType.KeyPress:
+							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 4) {
+								ushort id = PacketConverter.GetUShort(receivedPacket, 2);
+								if (!ackedPackets.Exists (p => p.ID == id)) {
+									Debug.WriteLine ("KeyPress: '" + Enum.GetName(typeof(KeyboardKey), (KeyboardKey)receivedPacket[1]) + "'");
+									keyboard.KeyPress ((KeyboardKey)receivedPacket [1]);
 								}
 								sendAck (id);
 							}

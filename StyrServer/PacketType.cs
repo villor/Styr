@@ -6,6 +6,7 @@ namespace StyrServer
 		Discovery,
 		Offer,
 		Connection,
+		Disconnect,
 		Ack,
 		Ping,
 		AccessDenied,
@@ -16,7 +17,9 @@ namespace StyrServer
 		MouseLeftDown,
 		MouseRightClick,
 		MouseRightUp,
-		MouseRightDown
+		MouseRightDown,
+		InputCharacter,
+		KeyPress
 	};
 }
 

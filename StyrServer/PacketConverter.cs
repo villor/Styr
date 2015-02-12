@@ -32,6 +32,13 @@ namespace StyrServer
 			return BitConverter.ToSingle (floatArr, 0);
 		}
 
+		public static char GetChar(byte[] array, int index)
+		{
+			byte[] charArr = new byte[2];
+			Array.Copy (array, index, charArr, 0, 2);
+			fixEndianess (charArr);
+			return BitConverter.ToChar (charArr, 0);
+		}
 	}
 }
 

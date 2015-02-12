@@ -71,6 +71,10 @@
     <Compile Include="AckedPacket.cs" />
     <Compile Include="PacketConverter.cs" />
     <Compile Include="PlatformDetector.cs" />
+    <Compile Include="Input\KeyboardDriverOSX.cs" />
+    <Compile Include="Input\KeyboardKey.cs" />
+    <Compile Include="Input\IKeyboardDriver.cs" />
+    <Compile Include="Input\KeyboardDriverWindows.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
