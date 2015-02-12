@@ -66,10 +66,8 @@ namespace StyrClient.Network
 			byte[] yArray = BitConverter.GetBytes (y);
 			packet [0] = (byte)PacketType.MouseMovement;
 
-			if (BitConverter.IsLittleEndian) {
-				Array.Reverse (xArray);
-				Array.Reverse (yArray);
-			}
+			fixEndianess (xArray);
+			fixEndianess (yArray);
 
 			Array.Copy (xArray, 0, packet, 1, xArray.Length);
 			Array.Copy (yArray, 0, packet, 5, yArray.Length);
@@ -83,10 +81,8 @@ namespace StyrClient.Network
 			byte[] yArray = BitConverter.GetBytes (y);
 			packet [0] = (byte)PacketType.MouseScroll;
 
-			if (BitConverter.IsLittleEndian) {
-				Array.Reverse (xArray);
-				Array.Reverse (yArray);
-			}
+			fixEndianess (xArray);
+			fixEndianess (yArray);
 
 			Array.Copy (xArray, 0, packet, 1, xArray.Length);
 			Array.Copy (yArray, 0, packet, 5, yArray.Length);
@@ -117,9 +113,26 @@ namespace StyrClient.Network
 			sendReliablePacket (packet);
 		}
 
+		public void sendCharacter (char character)
+		{
+			byte[] packet = new byte[3];
+			byte[] charBytes = BitConverter.GetBytes (character);
+			packet [0] = (byte)PacketType.InputCharacter;
+
+			fixEndianess (charBytes);
+
+			Array.Copy (charBytes, 0, packet, 1, charBytes.Length);
+			sendReliablePacket (packet);
+		}
+
+		public void sendKeyPress (KeyboardKey key){
+			byte[] packet = { (byte)PacketType.KeyPress, (byte)key };
+			sendReliablePacket (packet);
+		}
+
 		public void ping ()
 		{
-			byte [] packet = {(byte)PacketType.Ping };
+			byte [] packet = { (byte)PacketType.Ping };
 			sendReliablePacket (packet);
 		}
 
@@ -138,9 +151,7 @@ namespace StyrClient.Network
 
 			byte[] idArray = BitConverter.GetBytes (id);
 
-			if (BitConverter.IsLittleEndian) {
-				Array.Reverse (idArray);
-			}
+			fixEndianess (idArray);
 
 			byte[] newPacket = new byte[packet.Length + idArray.Length];
 			Array.Copy (packet, 0, newPacket, 0, packet.Length);
@@ -153,8 +164,6 @@ namespace StyrClient.Network
 		{
 			udpClient.Send (packet, packet.Length, remoteEndPoint);
 		}
-
-
 
 		private void receiveResendRemove ()
 		{
@@ -174,14 +183,12 @@ namespace StyrClient.Network
 							//Debug.WriteLine ("Ack received");
 							timeoutTimer.Restart ();
 
-							byte[] idArr = new byte[2];
-							idArr [0] = receivedPacket [1];
-							idArr [1] = receivedPacket [2];
+							byte[] idArray = new byte[2];
+							idArray [0] = receivedPacket [1];
+							idArray [1] = receivedPacket [2];
 
-							if (BitConverter.IsLittleEndian) {
-								Array.Reverse (idArr);
-							}
-							ushort idCtrl = BitConverter.ToUInt16 (idArr, 0);
+							fixEndianess (idArray);
+							ushort idCtrl = BitConverter.ToUInt16 (idArray, 0);
 
 							for (int i = sentPackList.Count - 1; i >= 0; i--) {
 								if (sentPackList[i].ID == idCtrl) {
@@ -224,15 +231,18 @@ namespace StyrClient.Network
 						Timeout ();
 						Debug.WriteLine ("Session timed out");
 					}
-
 					break;
 				}
 
 				Thread.Sleep (1);
-
-		
 			}
 		}
+
+		private static void fixEndianess (byte[] array){
+			if (BitConverter.IsLittleEndian) {
+				Array.Reverse (array);
+			}
+		}				
 	}
 }
 

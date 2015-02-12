@@ -18,6 +18,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\ReliablePacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Discovery.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\StyrServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)KeyboardKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IpConnectPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Network\" />

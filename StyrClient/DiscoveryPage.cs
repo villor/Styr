@@ -30,6 +30,20 @@ namespace StyrClient
 		{
 			Title = "Available Hosts";
 
+			IpConnectPage ipPage;
+			ToolbarItems.Add(new ToolbarItem("+", null,  async () =>
+				{
+					ipPage = new IpConnectPage();
+					await Navigation.PushAsync (ipPage);
+					ipPage.Complete += async () => {
+						RemoteSession remoteSession = new RemoteSession (ipPage.IP); // <---- this is where it goes to shit
+						var mainRemotePage = new MainRemotePage(ref remoteSession);
+						await Navigation.PushAsync (mainRemotePage);
+					};
+				}));
+
+
+
 			var listView = new ListView {
 
 				ItemsSource = AvailHosts,

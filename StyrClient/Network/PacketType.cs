@@ -7,6 +7,7 @@ namespace StyrClient.Network
 		Discovery,
 		Offer,
 		Connection,
+		Disconnect,
 		Ack,
 		Ping,
 		AccessDenied,
@@ -17,7 +18,9 @@ namespace StyrClient.Network
 		MouseLeftDown,
 		MouseRightClick,
 		MouseRightUp,
-		MouseRightDown
+		MouseRightDown,
+		InputCharacter,
+		KeyPress
 	}
 }
 
