@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\StyrServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KeyboardKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IpConnectPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)KeyboardEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Network\" />
