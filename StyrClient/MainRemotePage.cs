@@ -103,32 +103,16 @@ namespace StyrClient
 				keyboardEditor.Focus();
 			}));
 
-			/*var layout = new Grid {
+			Content = new Grid {
 				VerticalOptions = LayoutOptions.FillAndExpand,
 				ColumnDefinitions = { new ColumnDefinition() },
-				RowDefinitions = {new RowDefinition() }
-			};
-				
-			touchPad.VerticalOptions = LayoutOptions.FillAndExpand;
-			touchPad.HorizontalOptions = LayoutOptions.FillAndExpand;
-
-			var inputLayout = new RelativeLayout () {
-				VerticalOptions = LayoutOptions.FillAndExpand,
-				HorizontalOptions = LayoutOptions.FillAndExpand
-			};
-
-			inputLayout.Children.Add(keyboardEditor, Constraint.RelativeToParent ((parent) => parent.Height - keyboardEditor.Height));
-
-			layout.Children.Add (touchPad);
-			layout.Children.Add (inputLayout);
-
-			Content = layout;*/
-
-			Content = new StackLayout () {
-				Spacing = 0,
+				RowDefinitions = {new RowDefinition() },
 				Children = {
 					touchPad,
-					keyboardEditor
+					new StackLayout() {
+						VerticalOptions = LayoutOptions.EndAndExpand,
+						Children = { keyboardEditor }
+					}
 				}
 			};
 		}
