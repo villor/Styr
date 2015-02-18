@@ -57,11 +57,12 @@ namespace StyrClient
 			};
 
 			keyboardEditor.KeyPress += (key) => {
-				remoteSession.sendKeyPress(key);
+				remoteSession.sendKeyPress(key);            
 			};
 
 			keyboardEditor.Completed += (object sender, EventArgs e) => {
 				keyboardWasHidden = true;
+				keyboardEditor.IsVisible = false;
 			};
 
 			var touchPad = new TouchPad {
@@ -100,6 +101,7 @@ namespace StyrClient
 			};
 
 			ToolbarItems.Add(new ToolbarItem("keys", null, () =>{
+				keyboardEditor.IsVisible = true;
 				keyboardEditor.Focus();
 			}));
 

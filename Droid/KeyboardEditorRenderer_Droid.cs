@@ -38,6 +38,7 @@ namespace StyrClient.Droid
 					} else {
 						InputMethodManager inputMethodManager = (InputMethodManager)Android.App.Application.Context.GetSystemService(Android.Content.Context.InputMethodService);
 						inputMethodManager.HideSoftInputFromWindow(Control.WindowToken, HideSoftInputFlags.None);
+						resetInput();
 					}
 				};
 				Control.SetBackgroundColor (Android.Graphics.Color.Transparent);
@@ -58,6 +59,9 @@ namespace StyrClient.Droid
 						editor.OnKeyPress (KeyboardKey.Enter);
 					} else if (e.AfterCount > e.BeforeCount) {
 						editor.OnInputChar (Control.Text [Control.Text.Length - 1]);
+						if (Control.Text [Control.Text.Length - 1] == ' ') {
+							resetInput ();
+						}
 					}
 				} else {
 					wasEmptied = false;
