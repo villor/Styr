@@ -5,7 +5,7 @@
 		public static void Main ()
 		{
 			var server = new Server (1337);
-			while (server.Running) {}
+			while (server.Running) { System.Threading.Thread.Sleep (100); }
 		}
 	}
 }
