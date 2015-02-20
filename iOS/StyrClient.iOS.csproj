@@ -133,6 +133,7 @@
     <Compile Include="AppDelegate.cs" />
     <Compile Include="TouchPadRenderer_iOS.cs" />
     <Compile Include="MainRemotePageRenderer_iOS.cs" />
+    <Compile Include="KeyboardEditorRenderer_iOS.cs" />
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="ITunesArtwork" />

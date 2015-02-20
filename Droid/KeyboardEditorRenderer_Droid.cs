@@ -66,7 +66,6 @@ namespace StyrClient.Droid
 				} else {
 					wasEmptied = false;
 				}
-
 				if (Control.Text == "") {
 					resetInput ();
 				}
