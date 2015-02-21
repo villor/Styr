@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)KeyboardKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IpConnectPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KeyboardEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DesignConstants.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Network\" />

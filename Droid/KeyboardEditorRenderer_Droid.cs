@@ -25,7 +25,13 @@ namespace StyrClient.Droid
 				Control.SetTextIsSelectable (false);
 				Control.SetCursorVisible (false);
 				Control.Text = " ";
+				Control.SetTextColor (DesignConstants.KeyboardInputTextColor.ToAndroid());
+				Control.Gravity = GravityFlags.CenterHorizontal;
 				Control.SetSelection (Control.Text.Length);
+				Control.SetBackgroundColor (Android.Graphics.Color.Transparent);
+				Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;
+				Control.PrivateImeOptions = "nm";
+
 				Control.TextChanged += OnTextChanged;
 				Control.Touch += (object sender, TouchEventArgs ev) => {
 					Control.SetSelection (Control.Text.Length);
@@ -41,9 +47,7 @@ namespace StyrClient.Droid
 						resetInput();
 					}
 				};
-				Control.SetBackgroundColor (Android.Graphics.Color.Transparent);
-				Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;
-				Control.PrivateImeOptions = "nm";
+
 				wasEmptied = false;
 			}
 		}

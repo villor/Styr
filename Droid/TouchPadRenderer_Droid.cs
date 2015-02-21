@@ -26,9 +26,7 @@ namespace StyrClient.Droid
 			detector = new GestureDetector (listener);
 			detector.IsLongpressEnabled = false;
 		}
-
-
-			
+	
 		protected override void OnElementChanged (ElementChangedEventArgs<BoxView> e)
 		{
 			base.OnElementChanged (e);
@@ -103,7 +101,6 @@ namespace StyrClient.Droid
 			* Det här är kod för att hantera multi touch Right click,
 			* som inte hanteras i listener-klassen.
 			*/
-			//Console.WriteLine("1 Nu är jag här, och här är bra");
 			switch (e.Event.Action) 
 			{
 			case MotionEventActions.Pointer2Down:
@@ -115,7 +112,6 @@ namespace StyrClient.Droid
 			case MotionEventActions.PointerUp:
 				Console.WriteLine("PointerUp");
 				if (rightClickTimer.Elapsed.TotalMilliseconds < 250) {
-					//Console.WriteLine("3 Nu är jag här, och här är bra");
 					RightClick ();
 					rightClickTimer.Reset ();
 				}
