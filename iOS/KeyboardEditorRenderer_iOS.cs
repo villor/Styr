@@ -4,11 +4,6 @@ using Xamarin.Forms.Platform.iOS;
 using StyrClient;
 using StyrClient.iOS;
 using UIKit;
-using CoreText;
-using ObjCRuntime;
-using System.Linq;
-using System.Text;
-using Foundation;
 
 [assembly: ExportRenderer (typeof(KeyboardEditor), typeof(KeyboardEditorRenderer_iOS))]
 
@@ -18,8 +13,6 @@ namespace StyrClient.iOS
 	{
 		private KeyboardEditor editor;
 		private int oldTextLength;
-
-		//private string newText;
 
 		public KeyboardEditorRenderer_iOS ()
 		{
@@ -34,35 +27,29 @@ namespace StyrClient.iOS
 			if (Control != null) {
 				resetInput();
 				Control.BackgroundColor = UIColor.Clear;
+				Control.TintColor = Control.BackgroundColor;
 				Control.AutocorrectionType = UITextAutocorrectionType.No;
 				Control.Changed += onTextChanged;
-
-				//Control.SelectedRange = new NSRange {
-				//	Location = Control.Text.Length,
-				//	Length = 0
-				//};
-
+				Control.TextColor = DesignConstants.KeyboardInputTextColor.ToUIColor ();
+				Control.TextAlignment = UITextAlignment.Center;
+				Control.Font = Control.Font.WithSize (DesignConstants.KeyboardInputTextSize * 1.6f);
 			}
 		}
 
 		private void onTextChanged(object sender, EventArgs e)
 		{
 			if (Control != null && editor != null) {
-					if (Control.Text.Length <= oldTextLength) {
-						//Console.WriteLine ("Backspace");
-						editor.OnKeyPress (KeyboardKey.Backspace);
-					} else if (Control.Text [Control.Text.Length - 1] == '\n') {
-						//Console.WriteLine ("Enter");
+				if (Control.Text.Length <= oldTextLength) {
+					editor.OnKeyPress (KeyboardKey.Backspace);
+				} else if (Control.Text [Control.Text.Length - 1] == '\n') {
+					resetInput ();
+					editor.OnKeyPress (KeyboardKey.Enter);
+				} else if (Control.Text.Length > oldTextLength) {
+					editor.OnInputChar (Control.Text [Control.Text.Length - 1]);
+					if (Control.Text [Control.Text.Length - 1] == ' ') {
 						resetInput ();
-						editor.OnKeyPress (KeyboardKey.Enter);
-					} else if (Control.Text.Length > oldTextLength) {
-						//Console.WriteLine ("Input");
-						editor.OnInputChar (Control.Text [Control.Text.Length - 1]);
-						if (Control.Text [Control.Text.Length - 1] == ' ') {
-							//Console.WriteLine ("Space");
-							resetInput ();
-						}
 					}
+				}
 				if (Control.Text == "") {
 					resetInput ();
 				}
@@ -72,7 +59,6 @@ namespace StyrClient.iOS
 
 		private void resetInput()
 		{
-			//Console.WriteLine ("Nu körs skiteventet");
 			Control.Text = " ";
 		}
 	}
