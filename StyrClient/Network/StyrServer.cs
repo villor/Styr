@@ -3,25 +3,19 @@ using System.Net;
 
 namespace StyrClient
 {
-	public struct StyrServer
+	public class StyrServer
 	{
-
-		public string IP { get; private set; }
-
-		public IPEndPoint EndPoint {
-			get
-			{
-				return pEndPoint;
-			}
-			set
-			{
-				pEndPoint = value;
-				IP = value.Address.ToString ();
+		public IPEndPoint EndPoint { get; set; }
+		public string IP {
+			get {
+				return EndPoint.Address.ToString ();
 			}
 		}
 
-		private IPEndPoint pEndPoint;
-
+		public StyrServer (IPEndPoint endPoint)
+		{
+			EndPoint = endPoint;
+		}
 	}
 }
 

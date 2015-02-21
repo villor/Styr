@@ -8,45 +8,50 @@ using System.Diagnostics;
 using System.Collections.ObjectModel;
 
 using StyrClient.Network;
+using System.Threading.Tasks;
 
 namespace StyrClient
 {
 
 	public class DiscoveryPage : ContentPage
 	{
-
-		//Class members
-		ObservableCollection<StyrServer> AvailHosts;
+		private ObservableCollection<StyrServer> availableHosts;
 
 		public DiscoveryPage ()
 		{
-			AvailHosts = new ObservableCollection<StyrServer> ();
-
+			availableHosts = new ObservableCollection<StyrServer> ();
 			BuildPageGUI ();
-			FindServers ();
+		}
+
+		protected override async void OnAppearing ()
+		{
+			base.OnAppearing ();
+			await discoverHosts ();
+		}
+
+		private async Task discoverHosts()
+		{
+			Discovery discovery = new Discovery (availableHosts);
+			await discovery.DiscoverHostsAsync ();
 		}
 
 		public void BuildPageGUI ()
 		{
 			Title = "Available Hosts";
 
-			IpConnectPage ipPage;
-			ToolbarItems.Add(new ToolbarItem("+", null,  async () =>
-				{
-					ipPage = new IpConnectPage();
-					await Navigation.PushAsync (ipPage);
-					ipPage.Complete += async () => {
-						RemoteSession remoteSession = new RemoteSession (ipPage.IP); // <---- this is where it goes to shit
-						var mainRemotePage = new MainRemotePage(ref remoteSession);
-						await Navigation.PushAsync (mainRemotePage);
-					};
-				}));
-
-
-
+			ToolbarItems.Add(new ToolbarItem("+", null,  async () => {
+				var ipPage = new IpConnectPage();
+				await Navigation.PushAsync (ipPage);
+				ipPage.Complete += async () => {
+					var remoteSession = new RemoteSession (ipPage.IP);
+					var mainRemotePage = new MainRemotePage(ref remoteSession);
+					await Navigation.PushAsync (mainRemotePage);
+				};
+			}));
+				
 			var listView = new ListView {
 
-				ItemsSource = AvailHosts,
+				ItemsSource = availableHosts,
 				ItemTemplate = new DataTemplate (typeof(TextCell)),
 			};
 			listView.ItemTemplate.SetBinding (TextCell.TextProperty, "IP");
@@ -55,7 +60,7 @@ namespace StyrClient
 				var serverItem = (StyrServer)e.Item;
 
 				try {
-					RemoteSession remoteSession = new RemoteSession (serverItem.EndPoint); // <---- this is where it goes to shit
+					RemoteSession remoteSession = new RemoteSession (serverItem.EndPoint);
 					var mainRemotePage = new MainRemotePage(ref remoteSession);
 					await Navigation.PushAsync (mainRemotePage);
 				} catch (UnauthorizedAccessException uex) {
@@ -79,13 +84,6 @@ namespace StyrClient
 				Content = listView
 			};
 		}
-
-		public void FindServers ()
-		{
-			Discovery discovery = new Discovery (ref AvailHosts);
-			discovery.DiscoverHosts ();
-		}
-
 	}
 }
 
