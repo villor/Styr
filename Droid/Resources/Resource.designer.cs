@@ -41,6 +41,43 @@ namespace StyrClient.Droid
 			}
 		}
 		
+		public partial class Color
+		{
+			
+			// aapt resource value: 0x7f030003
+			public const int accent = 2130903043;
+			
+			// aapt resource value: 0x7f030007
+			public const int divider = 2130903047;
+			
+			// aapt resource value: 0x7f030006
+			public const int icons = 2130903046;
+			
+			// aapt resource value: 0x7f030000
+			public const int primary = 2130903040;
+			
+			// aapt resource value: 0x7f030001
+			public const int primary_dark = 2130903041;
+			
+			// aapt resource value: 0x7f030002
+			public const int primary_light = 2130903042;
+			
+			// aapt resource value: 0x7f030004
+			public const int primary_text = 2130903044;
+			
+			// aapt resource value: 0x7f030005
+			public const int secondary_text = 2130903045;
+			
+			static Color()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Color()
+			{
+			}
+		}
+		
 		public partial class Drawable
 		{
 			
@@ -63,8 +100,8 @@ namespace StyrClient.Droid
 		public partial class Style
 		{
 			
-			// aapt resource value: 0x7f030000
-			public const int StyrTheme = 2130903040;
+			// aapt resource value: 0x7f040000
+			public const int StyrTheme = 2130968576;
 			
 			static Style()
 			{

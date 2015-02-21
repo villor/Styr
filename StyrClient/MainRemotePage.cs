@@ -49,7 +49,6 @@ namespace StyrClient
 		private void BuildPageGUI()
 		{
 			Title = "Remote Control";
-			Icon = "Icon.png";
 			BackgroundImage = "TPImage.png";
 
 			var touchPad = createTouchPad ();
