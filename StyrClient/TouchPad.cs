@@ -26,6 +26,13 @@ namespace StyrClient
 		public event OnRightDownEventHandler RightDown;
 		public event OnRightUpEventHandler RightUp;
 
+		public TouchPad()
+		{
+			HorizontalOptions = LayoutOptions.FillAndExpand;
+			VerticalOptions = LayoutOptions.FillAndExpand;
+			Color = Color.Transparent;
+		}
+
 		public void OnMove(float x, float y) {
 			Console.WriteLine ("OnMove x:{0} y:{1}", x, y);
 			if (Moved != null) {

@@ -46,59 +46,14 @@ namespace StyrClient
 			}
 		}
 
-		public void BuildPageGUI(){
-
+		private void BuildPageGUI()
+		{
 			Title = "Remote Control";
 			Icon = "Icon.png";
+			BackgroundImage = "TPImage.png";
 
-			var keyboardEditor = new KeyboardEditor ();
-			keyboardEditor.InputChar += (c) => {
-				remoteSession.sendCharacter(c);
-			};
-
-			keyboardEditor.KeyPress += (key) => {
-				remoteSession.sendKeyPress(key);            
-			};
-
-			keyboardEditor.Completed += (object sender, EventArgs e) => {
-				keyboardWasHidden = true;
-				keyboardEditor.IsVisible = false;
-			};
-
-			var touchPad = new TouchPad {
-				HorizontalOptions = LayoutOptions.FillAndExpand,
-				VerticalOptions = LayoutOptions.FillAndExpand,
-				Color = Color.Maroon
-			};
-
-			touchPad.Moved += (float x, float y) => {
-				remoteSession.SendMouseMovement(x, y);
-				//Debug.WriteLine ("Sending MouseMovement to remote connected server");
-			};
-
-			touchPad.Scrolled += (float x, float y) => {
-				remoteSession.SendMouseScroll(x, y);
-			};
-
-			touchPad.LeftClick += () => {
-				remoteSession.SendLeftClick();
-				//Debug.WriteLine("Sending MouseLeftClick to remote connected server");
-			};
-
-			touchPad.LeftUp += () => {
-				remoteSession.SendLeftUp();
-				//Debug.WriteLine("Sending MouseLeftClick to remote connected server");
-			};
-
-			touchPad.LeftDown += () => {
-				remoteSession.SendLeftDown();
-				//Debug.WriteLine("Sending MouseLeftClick to remote connected server");
-			};
-
-			touchPad.RightClick += () => {
-				remoteSession.SendRightClick();
-				//Debug.WriteLine("Sending MouseRightClick to remote connected server");
-			};
+			var touchPad = createTouchPad ();
+			var keyboardEditor = createKeyboardEditor ();
 
 			ToolbarItems.Add(new ToolbarItem("keys", null, () =>{
 				keyboardEditor.IsVisible = true;
@@ -117,6 +72,56 @@ namespace StyrClient
 					}
 				}
 			};
+		}
+
+		private KeyboardEditor createKeyboardEditor()
+		{
+			var keyboardEditor = new KeyboardEditor ();
+			keyboardEditor.InputChar += (c) => {
+				remoteSession.sendCharacter(c);
+			};
+
+			keyboardEditor.KeyPress += (key) => {
+				remoteSession.sendKeyPress(key);            
+			};
+
+			keyboardEditor.Completed += (object sender, EventArgs e) => {
+				keyboardWasHidden = true;
+				keyboardEditor.IsVisible = false;
+			};
+
+			return keyboardEditor;
+		}
+
+		private TouchPad createTouchPad()
+		{
+			var touchPad = new TouchPad ();
+
+			touchPad.Moved += (float x, float y) => {
+				remoteSession.SendMouseMovement(x, y);
+			};
+
+			touchPad.Scrolled += (float x, float y) => {
+				remoteSession.SendMouseScroll(x, y);
+			};
+
+			touchPad.LeftClick += () => {
+				remoteSession.SendLeftClick();
+			};
+
+			touchPad.LeftUp += () => {
+				remoteSession.SendLeftUp();
+			};
+
+			touchPad.LeftDown += () => {
+				remoteSession.SendLeftDown();
+			};
+
+			touchPad.RightClick += () => {
+				remoteSession.SendRightClick();
+			};
+
+			return touchPad;
 		}
 	}
 }
