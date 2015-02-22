@@ -32,18 +32,18 @@ namespace StyrClient.Droid
 				Control.SetBackgroundColor (Android.Graphics.Color.Transparent);
 				Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;
 				Control.PrivateImeOptions = "nm";
+				Control.ImeOptions = Control.ImeOptions | (ImeAction)0x02000000; // IME_FLAG_NO_FULLSCREEN = 0x02000000
 
 				Control.TextChanged += OnTextChanged;
 				Control.Touch += (object sender, TouchEventArgs ev) => {
 					Control.SetSelection (Control.Text.Length);
 				};
 				Control.FocusChange += (object sender, FocusChangeEventArgs ev) => {
+					var inputMethodManager = (InputMethodManager)Android.App.Application.Context.GetSystemService(Android.Content.Context.InputMethodService);
 					if (ev.HasFocus) {
-						InputMethodManager inputMethodManager = (InputMethodManager)Android.App.Application.Context.GetSystemService(Android.Content.Context.InputMethodService);
 						inputMethodManager.ShowSoftInput(Control, ShowFlags.Forced);
 						inputMethodManager.ToggleSoftInput(ShowFlags.Forced, HideSoftInputFlags.ImplicitOnly);
 					} else {
-						InputMethodManager inputMethodManager = (InputMethodManager)Android.App.Application.Context.GetSystemService(Android.Content.Context.InputMethodService);
 						inputMethodManager.HideSoftInputFromWindow(Control.WindowToken, HideSoftInputFlags.None);
 						resetInput();
 					}
