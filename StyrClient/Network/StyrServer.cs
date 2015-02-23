@@ -11,11 +11,6 @@ namespace StyrClient
 				return EndPoint.Address.ToString ();
 			}
 		}
-		public string ImageSource {
-			get {
-				return "ic_action_computer.png";
-			}
-		}
 		public string Detail {
 			get {
 				return "This is the detail text";

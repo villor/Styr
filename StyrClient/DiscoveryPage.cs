@@ -55,8 +55,10 @@ namespace StyrClient
 				ItemTemplate = new DataTemplate (typeof(ImageCell)),
 			};
 			listView.ItemTemplate.SetBinding (ImageCell.TextProperty, "IP");
-			listView.ItemTemplate.SetBinding (ImageCell.ImageSourceProperty, "ImageSource");
 			listView.ItemTemplate.SetBinding (ImageCell.DetailProperty, "Detail");
+			listView.ItemTemplate.SetValue (ImageCell.TextColorProperty, Color.FromHex("#212121"));
+			listView.ItemTemplate.SetValue (ImageCell.DetailColorProperty, Color.FromHex ("#727272"));
+			listView.ItemTemplate.SetValue (ImageCell.ImageSourceProperty, "ic_action_computer.png");
 
 			listView.ItemTapped += async (sender, e) => {
 				var serverItem = (StyrServer)e.Item;
