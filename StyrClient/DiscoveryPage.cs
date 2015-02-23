@@ -60,6 +60,7 @@ namespace StyrClient
 
 			listView.ItemTapped += async (sender, e) => {
 				var serverItem = (StyrServer)e.Item;
+				listView.SelectedItem = null;
 
 				try {
 					RemoteSession remoteSession = new RemoteSession (serverItem.EndPoint);
