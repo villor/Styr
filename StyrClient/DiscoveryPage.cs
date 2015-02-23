@@ -52,9 +52,11 @@ namespace StyrClient
 			var listView = new ListView {
 
 				ItemsSource = availableHosts,
-				ItemTemplate = new DataTemplate (typeof(TextCell)),
+				ItemTemplate = new DataTemplate (typeof(ImageCell)),
 			};
-			listView.ItemTemplate.SetBinding (TextCell.TextProperty, "IP");
+			listView.ItemTemplate.SetBinding (ImageCell.TextProperty, "IP");
+			listView.ItemTemplate.SetBinding (ImageCell.ImageSourceProperty, "ImageSource");
+			listView.ItemTemplate.SetBinding (ImageCell.DetailProperty, "Detail");
 
 			listView.ItemTapped += async (sender, e) => {
 				var serverItem = (StyrServer)e.Item;

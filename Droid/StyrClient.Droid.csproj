@@ -88,6 +88,10 @@
     <AndroidResource Include="Resources\values\styles.xml" />
     <AndroidResource Include="Resources\drawable-nodpi\TPImage.png" />
     <AndroidResource Include="Resources\values\colors.xml" />
+    <AndroidResource Include="Resources\drawable-nodpi\ic_action_computer.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_action_computer.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_action_computer.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_computer.png" />
   </ItemGroup>
   <Import Project="..\StyrClient\StyrClient.projitems" Label="Shared" Condition="Exists('..\StyrClient\StyrClient.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
