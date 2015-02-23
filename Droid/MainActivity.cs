@@ -18,6 +18,11 @@ namespace StyrClient.Droid
 			base.OnCreate (bundle);
 
 			global::Xamarin.Forms.Forms.Init (this, bundle);
+
+			if (Build.VERSION.SdkInt == BuildVersionCodes.Lollipop) {
+				Window.AddFlags (WindowManagerFlags.DrawsSystemBarBackgrounds);
+			}
+
 			LoadApplication (new App ());
 		}
 	}
