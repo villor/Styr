@@ -64,22 +64,30 @@ namespace StyrClient
 				var serverItem = (StyrServer)e.Item;
 				listView.SelectedItem = null;
 
+				RemoteSession remoteSession = null;
+				string errorMessage = "";
+
 				try {
-					RemoteSession remoteSession = new RemoteSession (serverItem.EndPoint);
-					var mainRemotePage = new MainRemotePage(ref remoteSession);
-					await Navigation.PushAsync (mainRemotePage);
+					remoteSession = new RemoteSession (serverItem.EndPoint);
 				} catch (UnauthorizedAccessException uex) {
 					Debug.WriteLine(uex.StackTrace);
-					await DisplayAlert ("Unauthorized access", "Access has been denied", "OK");
+					errorMessage =  "Unauthorized access";
 				} catch (SocketException sex) {
 					Debug.WriteLine(sex.StackTrace);
-					await DisplayAlert ("Socket exception", "Something went wrong when connecting", "OK");
+					errorMessage = "Socket exception";
 				} catch (ArgumentNullException aex) {
 					Debug.WriteLine(aex.StackTrace);
-					await DisplayAlert ("Argument null exception", "Something went wrong when connecting", "OK");
+					errorMessage = "Argument null exception";
 				} catch (Exception ex) {
 					Debug.WriteLine(ex.StackTrace);
-					await DisplayAlert ("Unknown exception", "Something went wrong when connecting", "OK");
+					errorMessage = "Unknown exception";
+				}
+
+				if (RemoteSession != null) {
+					var mainRemotePage = new MainRemotePage(ref remoteSession);
+					await Navigation.PushAsync (mainRemotePage);
+				} else {
+					await DisplayAlert("Connection failed", errorMessage, "OK");
 				}
 
 			};
