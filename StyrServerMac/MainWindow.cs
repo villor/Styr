@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Net;
+using System.Net.Sockets;
 
 using MonoMac.Foundation;
 using MonoMac.AppKit;
@@ -36,6 +40,16 @@ namespace StyrServerMac
 
 			NSProcessInfo.ProcessInfo.DisableAutomaticTermination ("Server");
 			NSProcessInfo.ProcessInfo.DisableSuddenTermination ();
+		
+			// Ugly hack. Send dummy packets to 192.0.2.1:1 every 200 ms to keep OS X sockets from sleeping or whatever
+			Task.Run (() => {
+				var udp = new UdpClient();
+				while (true) {
+					Thread.Sleep(100);
+					byte[] p = {1};
+					udp.Send(p, p.Length, new IPEndPoint(new IPAddress(3221225985), 1)); 
+				}
+			});
 
 			server = new Server (1337);
 		}
