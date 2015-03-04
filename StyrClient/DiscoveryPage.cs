@@ -83,7 +83,7 @@ namespace StyrClient
 					errorMessage = "Unknown exception";
 				}
 
-				if (RemoteSession != null) {
+				if (remoteSession != null) {
 					var mainRemotePage = new MainRemotePage(ref remoteSession);
 					await Navigation.PushAsync (mainRemotePage);
 				} else {

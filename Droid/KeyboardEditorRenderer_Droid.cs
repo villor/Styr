@@ -32,7 +32,7 @@ namespace StyrClient.Droid
 				Control.SetBackgroundColor (Android.Graphics.Color.Transparent);
 				Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;
 				Control.PrivateImeOptions = "nm";
-				Control.ImeOptions = Control.ImeOptions | (ImeAction)0x02000000; // IME_FLAG_NO_FULLSCREEN = 0x02000000
+				Control.ImeOptions = Control.ImeOptions | (ImeAction)ImeFlags.NoFullscreen;
 
 				Control.TextChanged += OnTextChanged;
 				Control.Touch += (object sender, TouchEventArgs ev) => {

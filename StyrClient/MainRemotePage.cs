@@ -64,11 +64,11 @@ namespace StyrClient
 				ColumnDefinitions = { new ColumnDefinition() },
 				RowDefinitions = {new RowDefinition() },
 				Children = {
-					touchPad,
 					new StackLayout() {
 						VerticalOptions = LayoutOptions.EndAndExpand,
 						Children = { keyboardEditor }
-					}
+					},
+					touchPad
 				}
 			};
 		}
