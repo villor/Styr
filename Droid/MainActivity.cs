@@ -23,6 +23,8 @@ namespace StyrClient.Droid
 				Window.AddFlags (WindowManagerFlags.DrawsSystemBarBackgrounds);
 			}
 
+			Window.SetSoftInputMode (SoftInput.AdjustResize);
+
 			LoadApplication (new App ());
 		}
 	}

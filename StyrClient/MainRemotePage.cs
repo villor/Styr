@@ -53,21 +53,20 @@ namespace StyrClient
 
 			var touchPad = createTouchPad ();
 			var keyboardEditor = createKeyboardEditor ();
+			keyboardEditor.VerticalOptions = LayoutOptions.End;
 
 			ToolbarItems.Add(new ToolbarItem("keys", null, () =>{
 				keyboardEditor.IsVisible = true;
 				keyboardEditor.Focus();
 			}));
-
+				
 			Content = new Grid {
-				VerticalOptions = LayoutOptions.FillAndExpand,
+				VerticalOptions = LayoutOptions.Fill,
+				HorizontalOptions = LayoutOptions.Fill,
 				ColumnDefinitions = { new ColumnDefinition() },
 				RowDefinitions = {new RowDefinition() },
 				Children = {
-					new StackLayout() {
-						VerticalOptions = LayoutOptions.EndAndExpand,
-						Children = { keyboardEditor }
-					},
+					keyboardEditor,
 					touchPad
 				}
 			};
