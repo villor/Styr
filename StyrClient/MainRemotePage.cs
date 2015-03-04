@@ -15,6 +15,9 @@ namespace StyrClient
 		private RemoteSession remoteSession;
 		private bool keyboardWasHidden;
 
+		private Image keyboardButton;
+		private KeyboardEditor keyboardEditor;
+
 		public MainRemotePage(ref RemoteSession session)
 		{
 			keyboardWasHidden = false;
@@ -40,6 +43,7 @@ namespace StyrClient
 		{
 			if (keyboardWasHidden) {
 				keyboardWasHidden = false;
+				keyboardButton.IsVisible = true;
 				return true;
 			} else {
 				return base.OnBackButtonPressed ();
@@ -52,22 +56,30 @@ namespace StyrClient
 			BackgroundImage = "TPImage.png";
 
 			var touchPad = createTouchPad ();
-			var keyboardEditor = createKeyboardEditor ();
-			keyboardEditor.VerticalOptions = LayoutOptions.End;
+			keyboardEditor = createKeyboardEditor ();
 
-			ToolbarItems.Add(new ToolbarItem("keys", null, () =>{
+			var keyboardButtonTapRecognizer = new TapGestureRecognizer ();
+			keyboardButtonTapRecognizer.Tapped += (object sender, EventArgs e) => {
+				keyboardButton.IsVisible = false;
 				keyboardEditor.IsVisible = true;
 				keyboardEditor.Focus();
-			}));
-				
+			};
+			keyboardButton = new Image {
+				VerticalOptions = LayoutOptions.End,
+				HorizontalOptions = LayoutOptions.Center,
+				Source = "ic_keyboard_white_48dp.png",
+			};
+			keyboardButton.GestureRecognizers.Add (keyboardButtonTapRecognizer);
+
 			Content = new Grid {
 				VerticalOptions = LayoutOptions.Fill,
 				HorizontalOptions = LayoutOptions.Fill,
 				ColumnDefinitions = { new ColumnDefinition() },
-				RowDefinitions = {new RowDefinition() },
+				RowDefinitions = { new RowDefinition() },
 				Children = {
 					keyboardEditor,
-					touchPad
+					touchPad,
+					keyboardButton
 				}
 			};
 		}
@@ -75,6 +87,8 @@ namespace StyrClient
 		private KeyboardEditor createKeyboardEditor()
 		{
 			var keyboardEditor = new KeyboardEditor ();
+			keyboardEditor.VerticalOptions = LayoutOptions.End;
+
 			keyboardEditor.InputChar += (c) => {
 				remoteSession.sendCharacter(c);
 			};
@@ -86,6 +100,7 @@ namespace StyrClient
 			keyboardEditor.Completed += (object sender, EventArgs e) => {
 				keyboardWasHidden = true;
 				keyboardEditor.IsVisible = false;
+				keyboardButton.IsVisible = true;
 			};
 
 			return keyboardEditor;

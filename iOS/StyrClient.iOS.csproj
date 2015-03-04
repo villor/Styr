@@ -123,6 +123,8 @@
     <BundleResource Include="Resources\TPImage.png" />
     <BundleResource Include="Resources\ic_action_computer.png" />
     <BundleResource Include="Resources\ic_action_computer%402x.png" />
+    <BundleResource Include="Resources\ic_keyboard_white_48dp.png" />
+    <BundleResource Include="Resources\ic_keyboard_white_48dp%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
