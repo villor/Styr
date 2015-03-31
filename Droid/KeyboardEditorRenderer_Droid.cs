@@ -27,7 +27,7 @@ namespace StyrClient.Droid
 				Control.Text = " ";
 				Control.SetTextColor (DesignConstants.KeyboardInputTextColor.ToAndroid());
 				Control.SetTextSize (Android.Util.ComplexUnitType.Pt, DesignConstants.KeyboardInputTextSize);
-				Control.Gravity = GravityFlags.CenterHorizontal;
+				Control.Gravity = GravityFlags.CenterHorizontal | GravityFlags.Bottom;
 				Control.SetSelection (Control.Text.Length);
 				Control.SetBackgroundColor (Android.Graphics.Color.Transparent);
 				Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;

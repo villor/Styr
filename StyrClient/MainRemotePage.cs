@@ -57,6 +57,7 @@ namespace StyrClient
 
 			var touchPad = createTouchPad ();
 			keyboardEditor = createKeyboardEditor ();
+			keyboardEditor.VerticalOptions = LayoutOptions.Fill;
 
 			var keyboardButtonTapRecognizer = new TapGestureRecognizer ();
 			keyboardButtonTapRecognizer.Tapped += (object sender, EventArgs e) => {
