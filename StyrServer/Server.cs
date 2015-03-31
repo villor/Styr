@@ -67,7 +67,13 @@ namespace StyrServer
 						switch (receivedPacket [0]) {
 						case (byte)PacketType.Discovery:
 							Debug.WriteLine ("Discovery received from {0}:{1}", groupEP.Address, groupEP.Port);
-							byte[] offer = { (byte)PacketType.Offer };
+							byte[] UTF8HostName = Encoding.UTF8.GetBytes (Dns.GetHostName ());
+							byte[] offer = new byte[3 + UTF8HostName.Length];
+
+							offer [0] = (byte)PacketType.Offer;
+							PacketConverter.PutUShort ((ushort)UTF8HostName.Length, offer, 1);
+							Array.Copy (UTF8HostName, 0, offer, 3, UTF8HostName.Length);
+
 							udpClient.Send (offer, offer.Length, groupEP);
 							break;
 
