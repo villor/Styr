@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyrServerMac", "StyrServer
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StyrClient", "StyrClient\StyrClient.shproj", "{920C698D-7FC5-42E8-AA24-8F78189EEC96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyrClient.iOS", "iOS\StyrClient.iOS.csproj", "{E1F7F2CA-0340-4B71-8FCE-857EEE95B081}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyrClient.iOS", "StyrClient.iOS\StyrClient.iOS.csproj", "{E1F7F2CA-0340-4B71-8FCE-857EEE95B081}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyrClient.Droid", "Droid\StyrClient.Droid.csproj", "{3BB1CFEF-E74A-4043-9815-EB143B88876A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyrClient.Droid", "StyrClient.Droid\StyrClient.Droid.csproj", "{3BB1CFEF-E74A-4043-9815-EB143B88876A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
