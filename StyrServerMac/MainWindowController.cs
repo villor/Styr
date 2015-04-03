@@ -5,7 +5,7 @@ using System.Linq;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 
-namespace StyrServerMac
+namespace StyrServer.OSX
 {
 	public partial class MainWindowController : MonoMac.AppKit.NSWindowController
 	{

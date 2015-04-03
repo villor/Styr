@@ -4,7 +4,7 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
 
-namespace StyrServerMac
+namespace StyrServer.OSX
 {
 	public partial class AppDelegate : NSApplicationDelegate
 	{

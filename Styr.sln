@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyrServer", "StyrServer\StyrServer.csproj", "{41FD4734-5F88-46A2-9046-357016311608}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyrServerMac", "StyrServerMac\StyrServerMac.csproj", "{85065CF2-EAC2-4C84-BF3C-20C54A66EB57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyrServer.OSX", "StyrServerMac\StyrServer.OSX.csproj", "{85065CF2-EAC2-4C84-BF3C-20C54A66EB57}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StyrClient", "StyrClient\StyrClient.shproj", "{920C698D-7FC5-42E8-AA24-8F78189EEC96}"
 EndProject

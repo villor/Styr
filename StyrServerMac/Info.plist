@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>StyrServerMac</string>
+	<string>StyrServer.OSX</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.styrserver.mac</string>
+	<string>com.styrserver.osx</string>
 	<key>CFBundleName</key>
 	<string>StyrServerMac</string>
 	<key>CFBundleVersion</key>

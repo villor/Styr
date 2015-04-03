@@ -11,7 +11,7 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using StyrServer;
 
-namespace StyrServerMac
+namespace StyrServer.OSX
 {
 	public partial class MainWindow : MonoMac.AppKit.NSWindow
 	{

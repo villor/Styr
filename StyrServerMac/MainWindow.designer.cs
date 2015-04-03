@@ -1,5 +1,5 @@
 ﻿
-namespace StyrServerMac
+namespace StyrServer.OSX
 {
 	
 	// Should subclass MonoMac.AppKit.NSWindow
