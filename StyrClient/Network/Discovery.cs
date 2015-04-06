@@ -53,7 +53,10 @@ namespace StyrClient.Network
 								}
 								if(!duplicate){
 									Debug.WriteLine ("Adding Address {0} to list", ep.Address);
-									discoveredServers.Add (new StyrServer (ep));
+									ushort nameLength = PacketConverter.GetUShort(receivedData, 1);
+									string serverName = PacketConverter.getUTF8String(receivedData, 3, nameLength);
+									Console.WriteLine(serverName);
+									discoveredServers.Add (new StyrServer (ep, serverName));
 								}
 								duplicate = false;
 

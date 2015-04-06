@@ -6,20 +6,19 @@ namespace StyrClient
 	public class StyrServer
 	{
 		public IPEndPoint EndPoint { get; set; }
+		public string ServerName { get; set; }
+		public byte ServerOS { get; set; }
 		public string IP {
 			get {
 				return EndPoint.Address.ToString ();
 			}
 		}
-		public string Detail {
-			get {
-				return "This is the detail text";
-			}
-		}
 
-		public StyrServer (IPEndPoint endPoint)
+
+		public StyrServer (IPEndPoint endPoint, string serverName)
 		{
 			EndPoint = endPoint;
+			ServerName = serverName;
 		}
 	}
 }

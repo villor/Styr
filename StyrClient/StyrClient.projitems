@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)IpConnectPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KeyboardEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DesignConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\PacketConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Network\" />
