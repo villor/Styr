@@ -29,6 +29,10 @@ namespace StyrClient
 					Navigation.PopAsync();			
 				});
 			};
+
+			((App)App.Current).Sleep += OnAppSleep;
+			((App)App.Current).Resume += OnAppResume;
+
 			BuildPageGUI ();
 		}
 
@@ -36,10 +40,23 @@ namespace StyrClient
 			BuildPageGUI ();
 		}
 
+		public void OnAppSleep()
+		{
+			remoteSession.Disconnect ();
+		}
+
+		public void OnAppResume()
+		{
+			remoteSession.Connect ();
+		}
+
 		protected override void OnDisappearing ()
 		{
 			Console.WriteLine ("Disconnecting");
 			remoteSession.Disconnect ();
+
+			((App)App.Current).Sleep -= OnAppSleep;
+			((App)App.Current).Resume -= OnAppResume;
 		}
 
 		protected override bool OnBackButtonPressed ()

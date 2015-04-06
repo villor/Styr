@@ -4,8 +4,13 @@ using Xamarin.Forms;
 
 namespace StyrClient
 {
+	public delegate void OnLifeCycleEventHandler ();
+
 	public class App : Application
 	{
+		public event OnLifeCycleEventHandler Sleep;
+		public event OnLifeCycleEventHandler Resume;
+
 		public App ()
 		{
 			// The root page of your application
@@ -33,12 +38,16 @@ namespace StyrClient
 
 		protected override void OnSleep ()
 		{
-			// Handle when your app sleeps
+			if (Sleep != null) {
+				Sleep ();
+			}
 		}
 
 		protected override void OnResume ()
 		{
-			// Handle when your app resumes
+			if (Resume != null) {
+				Resume ();
+			}
 		}
 	}
 }
