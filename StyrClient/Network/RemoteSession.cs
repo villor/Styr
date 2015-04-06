@@ -138,15 +138,18 @@ namespace StyrClient.Network
 
 		private void sendReliablePacket (byte[] packet, bool isNewPacket = true, ushort id = 0)
 		{
+			
 			if (isNewPacket) {
 				id = reliablePacketID++;
 
-				sentPackList.Add (new ReliablePacket {
-					Packet = packet,
-					ID = id,
-					ElapsedTime = 0,
-					SendTimer = 0
-				});
+				lock (sentPackList) {
+					sentPackList.Add (new ReliablePacket {
+						Packet = packet,
+						ID = id,
+						ElapsedTime = 0,
+						SendTimer = 0
+					});
+				}
 			}
 
 			byte[] idArray = BitConverter.GetBytes (id);
@@ -193,7 +196,6 @@ namespace StyrClient.Network
 							for (int i = sentPackList.Count - 1; i >= 0; i--) {
 								if (sentPackList[i].ID == idCtrl) {
 									sentPackList.RemoveAt(i);
-									//Debug.WriteLine ("Tar bort ett jävla packe nu då");
 								}
 							}
 						} else if (receivedPacket [0] == (byte)PacketType.AccessDenied) {
@@ -205,17 +207,18 @@ namespace StyrClient.Network
 				}
 
 				loopTime.Stop ();
-				//Debug.WriteLine (loopTime.Elapsed.TotalMilliseconds);
-				for (int i = sentPackList.Count - 1; i >= 0; i--){
-					sentPackList[i].ElapsedTime += loopTime.Elapsed.TotalMilliseconds;
-					//Debug.WriteLine (sentPackList[i].ElapsedTime);
-					sentPackList[i].SendTimer += loopTime.Elapsed.TotalMilliseconds;
-					if (sentPackList[i].ElapsedTime > 1000) {
-						sentPackList.Remove (sentPackList[i]);	// <------------------ Sessionen ska avbrytas här?
-					} else if (sentPackList[i].SendTimer > 75) {
-						Debug.WriteLine ("Resending packet with elapsed time: {0}", sentPackList[i].ElapsedTime);
-						sendReliablePacket (sentPackList[i].Packet, false, sentPackList[i].ID);
-						sentPackList[i].SendTimer = 0;
+				lock (sentPackList) {
+					for (int i = sentPackList.Count - 1; i >= 0; i--) {
+						sentPackList [i].ElapsedTime += loopTime.Elapsed.TotalMilliseconds;
+						//Debug.WriteLine (sentPackList[i].ElapsedTime);
+						sentPackList [i].SendTimer += loopTime.Elapsed.TotalMilliseconds;
+						if (sentPackList [i].ElapsedTime > 1000) {
+							sentPackList.Remove (sentPackList [i]);	// <------------------ Sessionen ska avbrytas här?
+						} else if (sentPackList [i].SendTimer > 75) {
+							Debug.WriteLine ("Resending packet with elapsed time: {0}", sentPackList [i].ElapsedTime);
+							sendReliablePacket (sentPackList [i].Packet, false, sentPackList [i].ID);
+							sentPackList [i].SendTimer = 0;
+						}
 					}
 				}
 				loopTime.Restart();
