@@ -25,7 +25,7 @@ namespace StyrClient.Network
 			sentPackList = new List<ReliablePacket> ();
 			reliablePacketID = 0;
 
-			Reconnect (); // <----- Temporary, need try or some shit
+			Reconnect (); // <----- Temporary
 
 			Thread backgroundLoop = new Thread (() => {
 				Debug.WriteLine("receiverLoop is live!");
@@ -183,7 +183,6 @@ namespace StyrClient.Network
 
 					if (receivedPacket.Length != 0) {
 						if (receivedPacket [0] == (byte)PacketType.Ack) {
-							//Debug.WriteLine ("Ack received");
 							timeoutTimer.Restart ();
 
 							byte[] idArray = new byte[2];
@@ -210,7 +209,6 @@ namespace StyrClient.Network
 				lock (sentPackList) {
 					for (int i = sentPackList.Count - 1; i >= 0; i--) {
 						sentPackList [i].ElapsedTime += loopTime.Elapsed.TotalMilliseconds;
-						//Debug.WriteLine (sentPackList[i].ElapsedTime);
 						sentPackList [i].SendTimer += loopTime.Elapsed.TotalMilliseconds;
 						if (sentPackList [i].ElapsedTime > 1000) {
 							sentPackList.Remove (sentPackList [i]);	// <------------------ Sessionen ska avbrytas här?
