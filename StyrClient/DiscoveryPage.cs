@@ -43,9 +43,8 @@ namespace StyrClient
 				var ipPage = new IpConnectPage();
 				await Navigation.PushAsync (ipPage);
 				ipPage.Complete += async () => {
-					var remoteSession = new RemoteSession (ipPage.IP);
-					var mainRemotePage = new MainRemotePage(ref remoteSession);
-					await Navigation.PushAsync (mainRemotePage);
+					var ep = new IPEndPoint (ipPage.IP, 1337);
+					openMainRemotePage(ep);
 				};
 			}));
 				
@@ -60,42 +59,22 @@ namespace StyrClient
 			listView.ItemTemplate.SetValue (ImageCell.DetailColorProperty, Color.FromHex ("#727272"));
 			listView.ItemTemplate.SetValue (ImageCell.ImageSourceProperty, "ic_action_computer.png");
 
-			listView.ItemTapped += async (sender, e) => {
+			listView.ItemTapped += (sender, e) => {
 				var serverItem = (StyrServer)e.Item;
 				listView.SelectedItem = null;
-
-				RemoteSession remoteSession = null;
-				string errorMessage = "";
-
-				try {
-					remoteSession = new RemoteSession (serverItem.EndPoint);
-				} catch (UnauthorizedAccessException uex) {
-					Debug.WriteLine(uex.StackTrace);
-					errorMessage =  "Unauthorized access";
-				} catch (SocketException sex) {
-					Debug.WriteLine(sex.StackTrace);
-					errorMessage = "Socket exception";
-				} catch (ArgumentNullException aex) {
-					Debug.WriteLine(aex.StackTrace);
-					errorMessage = "Argument null exception";
-				} catch (Exception ex) {
-					Debug.WriteLine(ex.StackTrace);
-					errorMessage = "Unknown exception";
-				}
-
-				if (remoteSession != null) {
-					var mainRemotePage = new MainRemotePage(ref remoteSession);
-					await Navigation.PushAsync (mainRemotePage);
-				} else {
-					await DisplayAlert("Connection failed", errorMessage, "OK");
-				}
-
+				openMainRemotePage(serverItem.EndPoint);
 			};
 
 			Content = new ScrollView {
 
 				Content = listView
 			};
+		}
+
+		private void openMainRemotePage(IPEndPoint ep)
+		{
+			var mainRemotePage = new MainRemotePage (ep);
+			Navigation.PushAsync (mainRemotePage);
 		}
 	}
 }

@@ -17,6 +17,7 @@ namespace StyrClient.Network
 		private IPEndPoint remoteEndPoint;
 		private List<ReliablePacket> sentPackList;
 		private ushort reliablePacketID;
+		private bool connected;
 
 		public RemoteSession (IPEndPoint endPoint)
 		{
@@ -24,22 +25,21 @@ namespace StyrClient.Network
 			udpClient = new UdpClient ();
 			sentPackList = new List<ReliablePacket> ();
 			reliablePacketID = 0;
-
-			Reconnect (); // <----- Temporary
-
-			Thread backgroundLoop = new Thread (() => {
-				Debug.WriteLine("receiverLoop is live!");
-				receiveResendRemove ();
-			});
-			backgroundLoop.Start ();
 		}
 
 		public RemoteSession (IPAddress ipAddress) : this (new IPEndPoint (ipAddress, 1337))
 		{
 		}
 
-		public bool Reconnect ()
+		public void Disconnect ()
 		{
+			connected = false;
+		}
+
+		public bool Connect ()
+		{
+			Disconnect ();
+
 			// sending connection request
 			byte[] packet = { (byte)PacketType.Connection };
 			sendReliablePacket (packet);
@@ -48,6 +48,12 @@ namespace StyrClient.Network
 			byte[] receivedPacket = udpClient.Receive (ref remoteEndPoint);
 			if (receivedPacket.Length != 0) {
 				if (receivedPacket [0] == (byte)PacketType.Ack) {
+					connected = true;
+					Thread backgroundLoop = new Thread (() => {
+						Debug.WriteLine("receiverLoop is live!");
+						receiveResendRemove ();
+					});
+					backgroundLoop.Start ();
 					return true;
 				} else if (receivedPacket [0] == (byte)PacketType.AccessDenied) {
 					throw new UnauthorizedAccessException ("Unauthorized access");
@@ -176,7 +182,7 @@ namespace StyrClient.Network
 			pingTimer.Start ();
 			timeoutTimer.Start ();
 		
-			while (true) {
+			while (connected) {
 
 				if (udpClient.Available > 0) {
 					byte[] receivedPacket = udpClient.Receive (ref remoteEndPoint);
@@ -229,6 +235,7 @@ namespace StyrClient.Network
 
 				if (timeoutTimer.Elapsed.TotalSeconds > 10) {
 					if (Timeout != null) {
+						Disconnect ();
 						Timeout ();
 						Debug.WriteLine ("Session timed out");
 					}

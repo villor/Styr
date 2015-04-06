@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using Xamarin.Forms;
 using System.Diagnostics;
-
 using StyrClient.Network;
 
 namespace StyrClient
@@ -18,15 +17,17 @@ namespace StyrClient
 		private Image keyboardButton;
 		private KeyboardEditor keyboardEditor;
 
-		public MainRemotePage(ref RemoteSession session)
+		public MainRemotePage(IPEndPoint ep)
 		{
 			keyboardWasHidden = false;
-			remoteSession = session;
+			remoteSession = new RemoteSession (ep);
+			remoteSession.Connect ();
 
 			remoteSession.Timeout += () => {
-				Console.WriteLine("Server has stopped responding");
-				SendBackButtonPressed();				
-				//await Navigation.PopAsync();   // <--------- Balle
+				Device.BeginInvokeOnMainThread( () => {
+					Console.WriteLine("Server has stopped responding");
+					Navigation.PopAsync();			
+				});
 			};
 			BuildPageGUI ();
 		}
@@ -35,8 +36,10 @@ namespace StyrClient
 			BuildPageGUI ();
 		}
 
-		~MainRemotePage(){
-			Debug.WriteLine ("Instance of MainRemotePage destroyed"); // <------- Its just not happening
+		protected override void OnDisappearing ()
+		{
+			Console.WriteLine ("Disconnecting");
+			remoteSession.Disconnect ();
 		}
 
 		protected override bool OnBackButtonPressed ()
