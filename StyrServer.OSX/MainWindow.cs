@@ -35,8 +35,8 @@ namespace StyrServer.OSX
 		// Shared initialization code
 		void Initialize ()
 		{
-			Process.Start (new ProcessStartInfo("defaults", "write com.styrserver.mac NSAppSleepDisabled -bool YES"));
-			Process.Start (new ProcessStartInfo ("defaults", "write com.styrserver.mac LSAppNapIsDisabled -bool YES"));
+			Process.Start (new ProcessStartInfo("defaults", "write com.styrserver.osx NSAppSleepDisabled -bool YES"));
+			Process.Start (new ProcessStartInfo ("defaults", "write com.styrserver.osx LSAppNapIsDisabled -bool YES"));
 
 			NSProcessInfo.ProcessInfo.DisableAutomaticTermination ("Server");
 			NSProcessInfo.ProcessInfo.DisableSuddenTermination ();
