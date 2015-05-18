@@ -16,6 +16,7 @@ namespace StyrClient
 	public class DiscoveryPage : ContentPage
 	{
 		private ObservableCollection<StyrServer> availableHosts;
+		private bool itemSelected = false;
 
 		public DiscoveryPage ()
 		{
@@ -32,7 +33,17 @@ namespace StyrClient
 		private async Task discoverHosts()
 		{
 			Discovery discovery = new Discovery (availableHosts);
-			await discovery.DiscoverHostsAsync ();
+			Thread discoveryThread = new Thread (() => {
+				Debug.WriteLine("discoveryThread is live!");
+				while(!itemSelected){
+					discovery.DiscoverHostsAsync ();
+					Thread.Sleep(2000);
+				}
+				itemSelected = false;
+				Debug.WriteLine("Discovery is finished");
+			});
+			discoveryThread.Start ();
+
 		}
 
 		public void BuildPageGUI ()
@@ -63,6 +74,7 @@ namespace StyrClient
 				var serverItem = (StyrServer)e.Item;
 				listView.SelectedItem = null;
 				openMainRemotePage(serverItem.EndPoint);
+				itemSelected = true;
 			};
 
 			Content = new ScrollView {

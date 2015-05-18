@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -11,6 +12,8 @@ namespace StyrClient.Network
 	public class Discovery
 	{
 		private ObservableCollection<StyrServer> discoveredServers;
+		private IPEndPoint remoteEndPoint = new IPEndPoint (IPAddress.Broadcast, 1337);
+		private UdpClient udpClient = new UdpClient ();
 
 		public Discovery (ObservableCollection<StyrServer> servers)
 		{
@@ -20,8 +23,6 @@ namespace StyrClient.Network
 		public Task DiscoverHostsAsync()
 		{
 			return Task.Run (() => {
-				IPEndPoint remoteEndPoint = new IPEndPoint (IPAddress.Broadcast, 1337);
-				UdpClient udpClient = new UdpClient ();
 
 				byte[] packet = { (byte)PacketType.Discovery };
 				udpClient.Send (packet, packet.Length, remoteEndPoint);
@@ -34,38 +35,45 @@ namespace StyrClient.Network
 				offersTimer.Start ();
 				resendTimer.Start ();
 
-				while (true) {
 
-					if (resendTimer.Elapsed.TotalSeconds > 1){
-						udpClient.Send (packet, packet.Length, remoteEndPoint);
-						resendTimer.Restart();
+				if (resendTimer.Elapsed.TotalSeconds > 1){
+					udpClient.Send (packet, packet.Length, remoteEndPoint);
+					resendTimer.Restart();
+				}
+
+				/* Check if already discovered servers are still live.
+				Remove from list if not. */
+				var copy = discoveredServers;
+				foreach (StyrServer ss in copy){
+					if (udpClient.Available > 0){
+						Console.WriteLine("This server is avail: {0}", ss.EndPoint.Address.ToString());
+					}else{
+						discoveredServers.Remove(ss);
 					}
+				}
 
-					if (udpClient.Available > 0) {
-						byte[] receivedData = udpClient.Receive (ref ep);
-						if (receivedData.Length != 0) {
-							if (receivedData [0] == (byte)PacketType.Offer) {
-								bool duplicate = false;
-								foreach (StyrServer ss in discoveredServers){
-									if (ep.Equals(ss.EndPoint)){
-										duplicate = true;
-									}
+				if (udpClient.Available > 0) {
+					byte[] receivedData = udpClient.Receive (ref ep);
+					if (receivedData.Length != 0) {
+						if (receivedData [0] == (byte)PacketType.Offer) {
+							bool duplicate = false;
+							foreach (StyrServer ss in discoveredServers){
+								if (ep.Equals(ss.EndPoint)){
+									duplicate = true;
 								}
-								if(!duplicate){
-									Debug.WriteLine ("Adding Address {0} to list", ep.Address);
-									ushort nameLength = PacketConverter.GetUShort(receivedData, 1);
-									string serverName = PacketConverter.getUTF8String(receivedData, 3, nameLength);
-									Console.WriteLine(serverName);
-									discoveredServers.Add (new StyrServer (ep, serverName));
-								}
-								duplicate = false;
-
 							}
+							if(!duplicate){
+								Debug.WriteLine ("Adding Address {0} to list", ep.Address);
+								ushort nameLength = PacketConverter.GetUShort(receivedData, 1);
+								string serverName = PacketConverter.getUTF8String(receivedData, 3, nameLength);
+								Console.WriteLine(serverName);
+								discoveredServers.Add (new StyrServer (ep, serverName));
+							}
+							duplicate = false;
+
 						}
-					} else if (offersTimer.Elapsed.TotalSeconds > 10) {
-						Debug.WriteLine("Done discovering!");
-						break;
 					}
+
 				}
 			});
 		}
