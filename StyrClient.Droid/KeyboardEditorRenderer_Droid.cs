@@ -62,7 +62,11 @@ namespace StyrClient.Droid
 					} else if (Control.Text [Control.Text.Length - 1] == '\n') {
 						resetInput ();
 						editor.OnKeyPress (KeyboardKey.Enter);
-					} else if (e.AfterCount > e.BeforeCount) {
+					}else if ((e.AfterCount - e.BeforeCount) > 2){  // This else if-clause adds support for gesture typing
+						for (int i = 0; i < Control.Text.Length; i++){
+							editor.OnInputChar (Control.Text [i]);
+						}
+					}else if (e.AfterCount > e.BeforeCount) {
 						editor.OnInputChar (Control.Text [Control.Text.Length - 1]);
 						if (Control.Text [Control.Text.Length - 1] == ' ') {
 							resetInput ();

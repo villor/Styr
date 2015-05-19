@@ -84,7 +84,7 @@ namespace StyrClient.Network
 					}
 					if (!matchFound){
 						ss.failedDiscoveries++;
-						if (ss.failedDiscoveries >= 3)
+						if (ss.failedDiscoveries >= 2)
 						{
 							discoveredServers.Remove(ss);
 							Debug.WriteLine("Removing server {0}", ss.EndPoint.Address);
