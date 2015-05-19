@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -41,19 +42,10 @@ namespace StyrClient.Network
 					resendTimer.Restart();
 				}
 
-				/* Check if already discovered servers are still live.
-				Remove from list if not. */
-				var copy = discoveredServers;
-				foreach (StyrServer ss in copy){
-					if (udpClient.Available > 0){
-						Console.WriteLine("This server is avail: {0}", ss.EndPoint.Address.ToString());
-					}else{
-						discoveredServers.Remove(ss);
-					}
-				}
-
-				if (udpClient.Available > 0) {
+				var latestOffers = new List<StyrServer> ();
+				while (udpClient.Available > 0) {
 					byte[] receivedData = udpClient.Receive (ref ep);
+					latestOffers.Add(new StyrServer (ep, "temp"));
 					if (receivedData.Length != 0) {
 						if (receivedData [0] == (byte)PacketType.Offer) {
 							bool duplicate = false;
@@ -70,10 +62,36 @@ namespace StyrClient.Network
 								discoveredServers.Add (new StyrServer (ep, serverName));
 							}
 							duplicate = false;
-
 						}
 					}
+				}
 
+				// Clear list of dead servers
+				var tempList = new List<StyrServer> (discoveredServers);
+				Console.WriteLine(tempList.Count);
+				Console.WriteLine(latestOffers.Count);
+				foreach (StyrServer s in latestOffers){
+					Console.WriteLine(s.EndPoint);
+				}
+				foreach (StyrServer ss in tempList){
+					bool matchFound = false;
+						foreach (StyrServer ss2 in latestOffers){
+						if (ss.EndPoint.Address.Equals(ss2.EndPoint.Address)){
+							Debug.WriteLine("Match\t {0} - {1}", ss.EndPoint.Address, ss2.EndPoint.Address);
+							matchFound = true;
+							break;
+						}
+					}
+					if (!matchFound){
+						ss.failedDiscoveries++;
+						if (ss.failedDiscoveries >= 3)
+						{
+							discoveredServers.Remove(ss);
+							Debug.WriteLine("Removing server {0}", ss.EndPoint.Address);
+						}
+					}else{
+						ss.failedDiscoveries = 0;
+					}
 				}
 			});
 		}

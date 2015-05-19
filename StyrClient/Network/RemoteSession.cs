@@ -234,8 +234,8 @@ namespace StyrClient.Network
 				}
 
 				if (timeoutTimer.Elapsed.TotalSeconds > 10) {
+					Disconnect ();
 					if (Timeout != null) {
-						Disconnect ();
 						Timeout ();
 						Debug.WriteLine ("Session timed out");
 					}

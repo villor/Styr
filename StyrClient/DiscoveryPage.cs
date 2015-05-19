@@ -27,6 +27,7 @@ namespace StyrClient
 		protected override async void OnAppearing ()
 		{
 			base.OnAppearing ();
+			availableHosts.Clear ();
 			await discoverHosts ();
 		}
 
