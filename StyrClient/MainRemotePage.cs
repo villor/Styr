@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using System.Diagnostics;
 using StyrClient.Network;
@@ -21,7 +22,6 @@ namespace StyrClient
 		{
 			keyboardWasHidden = false;
 			remoteSession = new RemoteSession (ep);
-			remoteSession.Connect ();
 
 			remoteSession.Timeout += () => {
 				Device.BeginInvokeOnMainThread( () => {
@@ -40,14 +40,21 @@ namespace StyrClient
 			BuildPageGUI ();
 		}
 
-		public void OnAppSleep()
+		protected override async void OnAppearing ()
+		{
+			base.OnAppearing ();
+			Debug.WriteLine ("MainRemotePage active");
+			await connectToSession ();
+		}
+
+		public async void OnAppSleep()
 		{
 			remoteSession.Disconnect ();
 		}
 
-		public void OnAppResume()
+		public async void OnAppResume()
 		{
-			remoteSession.Connect ();
+			await connectToSession ();
 		}
 
 		protected override void OnDisappearing ()
@@ -103,6 +110,21 @@ namespace StyrClient
 					keyboardButton
 				}
 			};
+		}
+
+		private async Task connectToSession()
+		{
+			try {
+				await remoteSession.Connect ();
+			} catch (TimeoutException) {
+				Device.BeginInvokeOnMainThread( () => {
+					Navigation.PopAsync();			
+				});
+			} catch (Exception) {
+				Device.BeginInvokeOnMainThread( () => {
+					Navigation.PopAsync();			
+				});
+			}
 		}
 
 		private KeyboardEditor createKeyboardEditor()

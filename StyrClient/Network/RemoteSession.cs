@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace StyrClient.Network
 {
@@ -36,33 +37,47 @@ namespace StyrClient.Network
 			connected = false;
 		}
 
-		public bool Connect ()
+		public Task Connect ()
 		{
-			Disconnect ();
+			return Task.Run (() => {
+			
+				Disconnect ();
 
-			// sending connection request
-			byte[] packet = { (byte)PacketType.Connection };
-			sendReliablePacket (packet);
+				// sending connection request
+				byte[] packet = { (byte)PacketType.Connection };
+				sendUnreliablePacket (packet);
+				sendUnreliablePacket (packet); // just because
 
-			// receiving connection reply
-			byte[] receivedPacket = udpClient.Receive (ref remoteEndPoint);
-			if (receivedPacket.Length != 0) {
-				if (receivedPacket [0] == (byte)PacketType.Ack) {
-					connected = true;
-					Thread backgroundLoop = new Thread (() => {
-						Debug.WriteLine("receiverLoop is live!");
-						receiveResendRemove ();
-					});
-					backgroundLoop.Start ();
-					return true;
-				} else if (receivedPacket [0] == (byte)PacketType.AccessDenied) {
-					throw new UnauthorizedAccessException ("Unauthorized access");
+				var asyncResult = udpClient.BeginReceive (null, null);
+				asyncResult.AsyncWaitHandle.WaitOne (TimeSpan.FromSeconds (4));
+				if (asyncResult.IsCompleted) {
+					try {
+						byte[] receivedPacket = udpClient.EndReceive (asyncResult, ref remoteEndPoint);
+						// receiving connection reply
+						if (receivedPacket.Length != 0) {
+							if (receivedPacket [0] == (byte)PacketType.Ack) {
+								connected = true;
+								Thread backgroundLoop = new Thread (() => {
+									Debug.WriteLine ("receiverLoop is live!");
+									receiveResendRemove ();
+								});
+								backgroundLoop.Start ();
+							} else if (receivedPacket [0] == (byte)PacketType.AccessDenied) {
+								throw new UnauthorizedAccessException ("Unauthorized access");
+							} else {
+								throw new Exception ("Unknown error, connection not established");
+							}
+						} else {
+							throw new Exception ("Received packet contained no data");
+						}
+						// EndReceive worked and we have received data and remote endpoint
+					} catch (Exception ex) {
+						throw ex;
+					}
 				} else {
-					throw new Exception ("Unknown error, connection not established");
+					throw new TimeoutException ("Connection Timed Out");
 				}
-			} else {
-				return false;
-			}
+			});
 		}
 
 		public void SendMouseMovement (float x, float y)

@@ -31,19 +31,19 @@ namespace StyrClient
 			};*/
 		}
 
-		protected override void OnStart ()
+		protected override async void OnStart ()
 		{
 			// Handle when your app starts
 		}
 
-		protected override void OnSleep ()
+		protected override async void OnSleep ()
 		{
 			if (Sleep != null) {
 				Sleep ();
 			}
 		}
 
-		protected override void OnResume ()
+		protected override async void OnResume ()
 		{
 			if (Resume != null) {
 				Resume ();
