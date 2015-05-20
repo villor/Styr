@@ -31,17 +31,6 @@ namespace StyrClient.Network
 
 				IPEndPoint ep = new IPEndPoint (IPAddress.Any, 1337);
 
-				Stopwatch offersTimer = new Stopwatch ();
-				Stopwatch resendTimer = new Stopwatch ();
-				offersTimer.Start ();
-				resendTimer.Start ();
-
-
-				if (resendTimer.Elapsed.TotalSeconds > 1){
-					udpClient.Send (packet, packet.Length, remoteEndPoint);
-					resendTimer.Restart();
-				}
-
 				var latestOffers = new List<StyrServer> ();
 				while (udpClient.Available > 0) {
 					byte[] receivedData = udpClient.Receive (ref ep);
