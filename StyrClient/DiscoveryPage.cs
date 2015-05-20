@@ -16,34 +16,33 @@ namespace StyrClient
 	public class DiscoveryPage : ContentPage
 	{
 		private ObservableCollection<StyrServer> availableHosts;
-		private bool itemSelected = false;
+		private CancellationTokenSource cts;
 
 		public DiscoveryPage ()
 		{
 			availableHosts = new ObservableCollection<StyrServer> ();
+			cts = new CancellationTokenSource ();
 			BuildPageGUI ();
 		}
 
 		protected override async void OnAppearing ()
 		{
 			base.OnAppearing ();
+			Debug.WriteLine ("DiscoveryPage active");
 			availableHosts.Clear ();
+			if (cts != null) {
+				cts.Cancel ();
+				cts.Dispose ();
+				cts = new CancellationTokenSource ();
+			}
 			await discoverHosts ();
 		}
 
 		private async Task discoverHosts()
 		{
 			Discovery discovery = new Discovery (availableHosts);
-			Thread discoveryThread = new Thread (() => {
-				Debug.WriteLine("discoveryThread is live!");
-				while(!itemSelected){
-					discovery.DiscoverHostsAsync ();
-					Thread.Sleep(2000);
-				}
-				itemSelected = false;
-				Debug.WriteLine("Discovery is finished");
-			});
-			discoveryThread.Start ();
+			await RepeatActionEvery (() => discovery.DiscoverHostsAsync (), TimeSpan.FromSeconds (2), cts.Token);
+			Debug.WriteLine("Discovery is finished");
 
 		}
 
@@ -75,7 +74,6 @@ namespace StyrClient
 				var serverItem = (StyrServer)e.Item;
 				listView.SelectedItem = null;
 				openMainRemotePage(serverItem.EndPoint);
-				itemSelected = true;
 			};
 
 			Content = new ScrollView {
@@ -86,8 +84,23 @@ namespace StyrClient
 
 		private void openMainRemotePage(IPEndPoint ep)
 		{
+			cts.Cancel ();
 			var mainRemotePage = new MainRemotePage (ep);
 			Navigation.PushAsync (mainRemotePage);
+		}
+
+		private static async Task RepeatActionEvery(Action action, TimeSpan interval, CancellationToken cancellationToken)
+		{
+			while (true) {
+				action ();
+				Task task = Task.Delay (interval, cancellationToken);
+
+				try {
+					await task;
+				} catch (TaskCanceledException) {
+					return;
+				}
+			}
 		}
 	}
 }
