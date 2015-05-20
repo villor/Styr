@@ -44,6 +44,10 @@ namespace StyrClient.iOS
 				} else if (Control.Text [Control.Text.Length - 1] == '\n') {
 					resetInput ();
 					editor.OnKeyPress (KeyboardKey.Enter);
+				}else if((Control.Text.Length - oldTextLength) > 2){ // This should add gesture typing support, can't test in sim
+					for (int i = 0; i < Control.Text.Length; i++) {
+						editor.OnInputChar (Control.Text[i]);
+					}
 				} else if (Control.Text.Length > oldTextLength) {
 					editor.OnInputChar (Control.Text [Control.Text.Length - 1]);
 					if (Control.Text [Control.Text.Length - 1] == ' ') {
