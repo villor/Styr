@@ -77,18 +77,18 @@ namespace StyrServer
 							udpClient.Send (offer, offer.Length, groupEP);
 							break;
 
-						case (byte)PacketType.Connection:
-							if (receivedPacket.Length == 3) {
-								ushort id = PacketConverter.GetUShort(receivedPacket, 1);
-
-								Debug.WriteLine ("Connection received from {0}:{1}", groupEP.Address, groupEP.Port);
-								if (!ackedPackets.Exists (p => p.ID == id)) {
-									connectedClients.Add (new Client (groupEP));
-								}
-								sendAck (id);
-								Debug.WriteLine ("Ack sent to {0}", groupEP.Address);
-							}
-							break;
+                        case (byte)PacketType.Connection:
+                            if (receivedPacket.Length == 1)
+                            {
+                                Debug.WriteLine("Connection received from {0}:{1}", groupEP.Address, groupEP.Port);
+                                if (!connectedClients.Exists(p => p.EndPoint == groupEP))
+                                {
+                                    connectedClients.Add(new Client(groupEP));
+                                }
+                                sendAck(0);
+                                Debug.WriteLine("Ack sent to {0}", groupEP.Address);
+                            }
+                            break;
 
 						case (byte)PacketType.Ping:
 							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
