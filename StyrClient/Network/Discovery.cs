@@ -76,7 +76,7 @@ namespace StyrClient.Network
 				foreach (StyrServer ss in tempList){
 					bool matchFound = false;
 						foreach (StyrServer ss2 in latestOffers){
-						if (ss.EndPoint.Address.Equals(ss2.EndPoint.Address)){
+						if (ss.EndPoint.Equals(ss2.EndPoint)){
 							Debug.WriteLine("Match\t {0} - {1}", ss.EndPoint.Address, ss2.EndPoint.Address);
 							matchFound = true;
 							break;
