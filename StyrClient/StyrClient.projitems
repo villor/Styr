@@ -19,7 +19,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Discovery.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\StyrServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KeyboardKey.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IpConnectPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KeyboardEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DesignConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\PacketConverter.cs" />

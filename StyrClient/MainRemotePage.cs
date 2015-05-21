@@ -25,6 +25,7 @@ namespace StyrClient
 
 			remoteSession.Timeout += () => {
 				Device.BeginInvokeOnMainThread( () => {
+					DisplayAlert("Connection error", "Remote server has stopped responding", "OK");
 					Console.WriteLine("Server has stopped responding");
 					Navigation.PopAsync();			
 				});
@@ -117,10 +118,12 @@ namespace StyrClient
 			try {
 				await remoteSession.Connect ();
 			} catch (TimeoutException) {
+				await DisplayAlert("Connection error", "Could not connect to remote server", "OK");
 				Device.BeginInvokeOnMainThread( () => {
 					Navigation.PopAsync();			
 				});
 			} catch (Exception) {
+				await DisplayAlert("Connection error", "Could not connect to remote server", "OK");
 				Device.BeginInvokeOnMainThread( () => {
 					Navigation.PopAsync();			
 				});
