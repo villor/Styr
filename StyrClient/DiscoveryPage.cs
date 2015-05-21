@@ -50,13 +50,26 @@ namespace StyrClient
 		{
 			Title = "Available Hosts";
 
+			var ipConnectField = new Entry { Placeholder = "IP Address" };
+			ipConnectField.IsVisible = false;
+			ipConnectField.Completed += (sender, e) => {
+				try {
+					openMainRemotePage (new IPEndPoint (IPAddress.Parse(ipConnectField.Text), 1337));
+				} catch (FormatException) {
+					DisplayAlert("Incorrect Address", "Please check format of IP Address", "OK");
+				} catch (Exception) {
+					DisplayAlert("Error", "Could not connect to remote host", "OK");
+				}
+			};
+
 			ToolbarItems.Add(new ToolbarItem("+", null,  async () => {
-				var ipPage = new IpConnectPage();
-				await Navigation.PushAsync (ipPage);
-				ipPage.Complete += async () => {
-					var ep = new IPEndPoint (ipPage.IP, 1337);
-					openMainRemotePage(ep);
-				};
+				if (ipConnectField.IsVisible == false){
+					ipConnectField.IsVisible = true;
+
+				} else {
+					ipConnectField.IsVisible = false;
+
+				}
 			}));
 				
 			var listView = new ListView {
@@ -76,9 +89,15 @@ namespace StyrClient
 				openMainRemotePage(serverItem.EndPoint);
 			};
 
-			Content = new ScrollView {
-
+			var scrollView = new ScrollView {
 				Content = listView
+			};
+
+			Content = new StackLayout {
+				Children = {
+					ipConnectField,
+					scrollView
+				}
 			};
 		}
 
