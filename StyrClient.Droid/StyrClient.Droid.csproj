@@ -97,6 +97,12 @@
     <AndroidResource Include="Resources\drawable-hdpi\ic_keyboard_white_48dp.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\ic_keyboard_white_48dp.png" />
     <AndroidResource Include="Resources\drawable-mdpi\ic_keyboard_white_48dp.png" />
+    <AndroidResource Include="Resources\drawable-nodpi\Mac_Client100.png" />
+    <AndroidResource Include="Resources\drawable-nodpi\Win_Client100.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\Mac_Client100.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\Win_Client100.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\Mac_Client100.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\Win_Client100.png" />
   </ItemGroup>
   <Import Project="..\StyrClient\StyrClient.projitems" Label="Shared" Condition="Exists('..\StyrClient\StyrClient.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
