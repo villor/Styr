@@ -49,7 +49,7 @@ namespace StyrClient.Network
 								discoveredServers.Add (new StyrServer (ep, serverName, platform));
 								Debug.WriteLine ("Server discovered: " + serverName + " (" + ep.Address + ") Platform: " + platform);
 							}
-							duplicate = false;
+							duplicate = false; 
 						}
 					}
 				}
@@ -61,16 +61,16 @@ namespace StyrClient.Network
 						foreach (IPEndPoint iep in latestOffers) {
 						if (ss.EndPoint.Equals(iep)) {
 							matchFound = true;
-							break;
+							break; 
 						}
 					}
 					if (!matchFound){
-						ss.failedDiscoveries++;
-						if (ss.failedDiscoveries >= 2) {
+						ss.FailedDiscoveries++;
+						if (ss.FailedDiscoveries >= 2) {
 							discoveredServers.Remove(ss);
 						}
 					} else {
-						ss.failedDiscoveries = 0;
+						ss.FailedDiscoveries = 0;
 					}
 				}
 			});

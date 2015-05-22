@@ -6,7 +6,6 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
-
 using StyrClient.Network;
 using System.Threading.Tasks;
 
@@ -56,14 +55,14 @@ namespace StyrClient
 				try {
 					openMainRemotePage (new IPEndPoint (IPAddress.Parse(ipConnectField.Text), 1337));
 				} catch (FormatException) {
-					DisplayAlert("Incorrect Address", "Please check format of IP Address", "OK");
+					DisplayAlert("Incorrect Address", "Check format of IP Address", "OK");
 				} catch (Exception) {
 					DisplayAlert("Error", "Could not connect to remote host", "OK");
 				}
 			};
 
 			ToolbarItems.Add(new ToolbarItem("+", null,  async () => {
-				if (ipConnectField.IsVisible == false){
+				if (!ipConnectField.IsVisible){
 					ipConnectField.IsVisible = true;
 
 				} else {
@@ -73,15 +72,45 @@ namespace StyrClient
 			}));
 				
 			var listView = new ListView {
-
+				HasUnevenRows = true,
+				RowHeight = 120,
 				ItemsSource = availableHosts,
-				ItemTemplate = new DataTemplate (typeof(ImageCell)),
+				ItemTemplate = new DataTemplate (() => {
+					// Create views with bindings for displaying each property.
+					Label nameLabel = new Label ();
+					nameLabel.SetBinding (Label.TextProperty, "ServerName");
+					nameLabel.FontSize = 20;
+					nameLabel.TextColor = Color.FromHex("#212121");
+
+					Label ipLabel = new Label ();
+					ipLabel.SetBinding (Label.TextProperty, "IP");
+
+					Image image = new Image ();
+					image.SetBinding (Image.SourceProperty, "PlatformImageSource");
+							
+					// Return an assembled ViewCell.
+					return new ViewCell {
+						View = new StackLayout {
+							Padding = new Thickness (20, 20),
+							VerticalOptions = LayoutOptions.CenterAndExpand,
+							HorizontalOptions = LayoutOptions.Center,
+							Orientation = StackOrientation.Horizontal,
+							Children = {
+								image,
+								new StackLayout {
+									VerticalOptions = LayoutOptions.CenterAndExpand,
+									Spacing = 0,
+									Padding = 10,
+									Children = {
+										nameLabel,
+										ipLabel
+									}
+								}
+							}
+						}
+					};
+				})
 			};
-			listView.ItemTemplate.SetBinding (ImageCell.TextProperty, "ServerName");
-			listView.ItemTemplate.SetBinding (ImageCell.DetailProperty, "IP");
-			listView.ItemTemplate.SetValue (ImageCell.TextColorProperty, Color.FromHex("#212121"));
-			listView.ItemTemplate.SetValue (ImageCell.DetailColorProperty, Color.FromHex ("#727272"));
-			listView.ItemTemplate.SetValue (ImageCell.ImageSourceProperty, "ic_action_computer.png");
 
 			listView.ItemTapped += (sender, e) => {
 				var serverItem = (StyrServer)e.Item;
