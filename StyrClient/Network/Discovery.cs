@@ -27,28 +27,27 @@ namespace StyrClient.Network
 
 				byte[] packet = { (byte)PacketType.Discovery };
 				udpClient.Send (packet, packet.Length, remoteEndPoint);
-				Debug.WriteLine ("sending Discovery to address: {0} port {1}", remoteEndPoint.Address, remoteEndPoint.Port);
 
 				IPEndPoint ep = new IPEndPoint (IPAddress.Any, 1337);
 
-				var latestOffers = new List<StyrServer> ();
+				var latestOffers = new List<IPEndPoint> ();
 				while (udpClient.Available > 0) {
 					byte[] receivedData = udpClient.Receive (ref ep);
-					latestOffers.Add(new StyrServer (ep, "temp"));
+					latestOffers.Add(ep);
 					if (receivedData.Length != 0) {
 						if (receivedData [0] == (byte)PacketType.Offer) {
 							bool duplicate = false;
-							foreach (StyrServer ss in discoveredServers){
-								if (ep.Equals(ss.EndPoint)){
+							foreach (StyrServer ss in discoveredServers) {
+								if (ep.Equals(ss.EndPoint)) {
 									duplicate = true;
 								}
 							}
-							if(!duplicate){
-								Debug.WriteLine ("Adding Address {0} to list", ep.Address);
-								ushort nameLength = PacketConverter.GetUShort(receivedData, 1);
-								string serverName = PacketConverter.getUTF8String(receivedData, 3, nameLength);
-								Console.WriteLine(serverName);
-								discoveredServers.Add (new StyrServer (ep, serverName));
+							if(!duplicate) {
+								PlatformID platform = (PlatformID)PacketConverter.GetUShort(receivedData, 1);
+								ushort nameLength = PacketConverter.GetUShort(receivedData, 3);
+								string serverName = PacketConverter.getUTF8String(receivedData, 5, nameLength);
+								discoveredServers.Add (new StyrServer (ep, serverName, platform));
+								Debug.WriteLine ("Server discovered: " + serverName + " (" + ep.Address + ") Platform: " + platform);
 							}
 							duplicate = false;
 						}
@@ -57,28 +56,20 @@ namespace StyrClient.Network
 
 				// Clear list of dead servers
 				var tempList = new List<StyrServer> (discoveredServers);
-				Console.WriteLine(tempList.Count);
-				Console.WriteLine(latestOffers.Count);
-				foreach (StyrServer s in latestOffers){
-					Console.WriteLine(s.EndPoint);
-				}
-				foreach (StyrServer ss in tempList){
+				foreach (StyrServer ss in tempList) {
 					bool matchFound = false;
-						foreach (StyrServer ss2 in latestOffers){
-						if (ss.EndPoint.Equals(ss2.EndPoint)){
-							Debug.WriteLine("Match\t {0} - {1}", ss.EndPoint.Address, ss2.EndPoint.Address);
+						foreach (IPEndPoint iep in latestOffers) {
+						if (ss.EndPoint.Equals(iep)) {
 							matchFound = true;
 							break;
 						}
 					}
 					if (!matchFound){
 						ss.failedDiscoveries++;
-						if (ss.failedDiscoveries >= 2)
-						{
+						if (ss.failedDiscoveries >= 2) {
 							discoveredServers.Remove(ss);
-							Debug.WriteLine("Removing server {0}", ss.EndPoint.Address);
 						}
-					}else{
+					} else {
 						ss.failedDiscoveries = 0;
 					}
 				}

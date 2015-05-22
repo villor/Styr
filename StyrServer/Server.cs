@@ -68,11 +68,12 @@ namespace StyrServer
 						case (byte)PacketType.Discovery:
 							Debug.WriteLine ("Discovery received from {0}:{1}", groupEP.Address, groupEP.Port);
 							byte[] UTF8HostName = Encoding.UTF8.GetBytes (Dns.GetHostName ());
-							byte[] offer = new byte[3 + UTF8HostName.Length];
+							byte[] offer = new byte[7 + UTF8HostName.Length];
 
 							offer [0] = (byte)PacketType.Offer;
-							PacketConverter.PutUShort ((ushort)UTF8HostName.Length, offer, 1);
-							Array.Copy (UTF8HostName, 0, offer, 3, UTF8HostName.Length);
+							PacketConverter.PutUShort ((ushort)PlatformDetector.CurrentPlatform, offer, 1);
+							PacketConverter.PutUShort ((ushort)UTF8HostName.Length, offer, 3);
+							Array.Copy (UTF8HostName, 0, offer, 5, UTF8HostName.Length);
 
 							udpClient.Send (offer, offer.Length, groupEP);
 							break;
