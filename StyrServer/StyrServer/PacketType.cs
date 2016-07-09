@@ -2,7 +2,8 @@
 
 namespace StyrServer
 {
-	enum PacketType : byte {
+	enum PacketType : byte
+	{
 		Discovery,
 		Offer,
 		Connection,

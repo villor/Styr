@@ -5,40 +5,15 @@ namespace StyrServer
 {
 	public class Client
 	{
-		private IPEndPoint _ep;
-		public IPEndPoint EndPoint {
-			get {
-				return _ep;
-			}
-			set {
-				_ep = value;
-			}
-		}
-
-		public IPAddress IP {
-			get {
-				return _ep.Address;
-			}
-			set {
-				_ep.Address = value;
-			}
-		}
-
-		public int Port {
-			get {
-				return _ep.Port;
-			}
-			set {
-				_ep.Port = value;
-			}
-		}
-
-		public Client (IPEndPoint ep)
+		public Client(IPEndPoint ep)
 		{
-			_ep = ep;
+			EndPoint = ep;
 			TimeSinceLastPing = TimeSpan.Zero;
 		}
 
+		public IPEndPoint EndPoint { get; set; }
+		public IPAddress IP { get; set; }
+		public int Port { get; set; }
 		public TimeSpan TimeSinceLastPing { get; set; }
 	}
 }

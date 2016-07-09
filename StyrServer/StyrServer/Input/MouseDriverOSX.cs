@@ -5,7 +5,8 @@ namespace StyrServer.Input
 {
 	public class MouseDriverOSX : IMouseDriver
 	{
-		enum CGEventType : uint {
+		enum CGEventType : uint
+		{
 			Null = 0,
 			LeftMouseDown = 1,
 			LeftMouseUp = 2,
@@ -27,52 +28,56 @@ namespace StyrServer.Input
 			TapDisabledByUserInput = 4294967295
 		};
 
-		enum CGMouseButton : uint {
+		enum CGMouseButton : uint
+		{
 			kCGMouseButtonLeft = 0,
 			kCGMouseButtonRight = 1,
 			kCGMouseButtonCenter = 2
-		}; 
-
-		enum CGEventTapLocation : uint {
-			kCGHIDEventTap = 0,
-			kCGSessionEventTap,
-			kCGAnnotatedSessionEventTap 
 		};
 
-		enum CGScrollEventUnit : uint {
+		enum CGEventTapLocation : uint
+		{
+			kCGHIDEventTap = 0,
+			kCGSessionEventTap,
+			kCGAnnotatedSessionEventTap
+		};
+
+		enum CGScrollEventUnit : uint
+		{
 			kCGScrollEventUnitPixel = 0,
 			kCGScrollEventUnitLine = 1
 		};
 
 		[StructLayout(LayoutKind.Sequential)]
-		struct CGPoint {
+		struct CGPoint
+		{
 			public float X;
 			public float Y;
 		}
 
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
-		private static extern IntPtr CGEventCreateMouseEvent (IntPtr source, CGEventType mouseType, CGPoint mouseCursorPosition, CGMouseButton mouseButton);
+		private static extern IntPtr CGEventCreateMouseEvent(IntPtr source, CGEventType mouseType, CGPoint mouseCursorPosition, CGMouseButton mouseButton);
 
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
-		private static extern void CGEventPost (CGEventTapLocation tap, IntPtr e);
+		private static extern void CGEventPost(CGEventTapLocation tap, IntPtr e);
 
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
-		private static extern void CFRelease (IntPtr cf);
+		private static extern void CFRelease(IntPtr cf);
 
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
-		private static extern IntPtr CGEventCreate (IntPtr source);
+		private static extern IntPtr CGEventCreate(IntPtr source);
 
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
-		private static extern CGPoint CGEventGetLocation (IntPtr e);
+		private static extern CGPoint CGEventGetLocation(IntPtr e);
 
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
-		private static extern uint CGDisplayPixelsHigh (IntPtr screenId);
+		private static extern uint CGDisplayPixelsHigh(IntPtr screenId);
 
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
-		private static extern uint CGDisplayPixelsWide (IntPtr screenId);
+		private static extern uint CGDisplayPixelsWide(IntPtr screenId);
 
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
-		private static extern IntPtr CGMainDisplayID ();
+		private static extern IntPtr CGMainDisplayID();
 
 		[DllImport("ApplicationServices.framework/ApplicationServices")]
 		private static extern IntPtr CGEventCreateScrollWheelEvent(IntPtr source, CGScrollEventUnit units, uint wheelCount, int wheel1, int wheel2);
@@ -83,24 +88,29 @@ namespace StyrServer.Input
 		private uint screenWidth;
 		private uint screenHeight;
 
-		public MouseDriverOSX ()
+		public MouseDriverOSX()
 		{
-			if (PlatformDetector.CurrentPlatform != PlatformID.MacOSX) {
-				throw new PlatformNotSupportedException ("Can't run OSX-specific code on this platform!");
+			if (PlatformDetector.CurrentPlatform != PlatformID.MacOSX)
+			{
+				throw new PlatformNotSupportedException("Can't run OSX-specific code on this platform!");
 			}
-			screenWidth = CGDisplayPixelsWide (CGMainDisplayID ());
-			screenHeight = CGDisplayPixelsHigh (CGMainDisplayID ());
+			screenWidth = CGDisplayPixelsWide(CGMainDisplayID());
+			screenHeight = CGDisplayPixelsHigh(CGMainDisplayID());
 		}
 
-		public void MoveTo (float x, float y)
+		public void MoveTo(float x, float y)
 		{
 			CGEventType eventType;
 
-			if (leftButtonDown) {
+			if (leftButtonDown)
+			{
 				eventType = CGEventType.LeftMouseDragged;
-			} else if (rightButtonDown) {
+			}
+			else if (rightButtonDown)
+			{
 				eventType = CGEventType.RightMouseDragged;
-			} else {
+			}
+			else {
 				eventType = CGEventType.MouseMoved;
 			}
 
@@ -114,8 +124,8 @@ namespace StyrServer.Input
 				p.Y = screenHeight - 1;
 			if (p.Y < 0)
 				p.Y = 0;
-				
-			IntPtr move = CGEventCreateMouseEvent (
+
+			IntPtr move = CGEventCreateMouseEvent(
 				IntPtr.Zero, eventType,
 				p, CGMouseButton.kCGMouseButtonLeft
 			);
@@ -124,13 +134,13 @@ namespace StyrServer.Input
 			CFRelease(move);
 		}
 
-		public void RelativeMove (float x, float y)
+		public void RelativeMove(float x, float y)
 		{
-			Point mousePos = GetPosition ();
-			MoveTo (mousePos.X + x, mousePos.Y + y);
+			Point mousePos = GetPosition();
+			MoveTo(mousePos.X + x, mousePos.Y + y);
 		}
 
-		public Point GetPosition ()
+		public Point GetPosition()
 		{
 			IntPtr mouse = CGEventCreate(IntPtr.Zero);
 			CGPoint mousePos = CGEventGetLocation(mouse);
@@ -138,9 +148,9 @@ namespace StyrServer.Input
 			return new Point { X = mousePos.X, Y = mousePos.Y };
 		}
 
-		public void LeftButtonDown ()
+		public void LeftButtonDown()
 		{
-			Point mousePos = GetPosition ();
+			Point mousePos = GetPosition();
 			CGPoint p = new CGPoint { X = mousePos.X, Y = mousePos.Y };
 			IntPtr click = CGEventCreateMouseEvent(
 				IntPtr.Zero, CGEventType.LeftMouseDown,
@@ -152,9 +162,9 @@ namespace StyrServer.Input
 			leftButtonDown = true;
 		}
 
-		public void LeftButtonUp ()
+		public void LeftButtonUp()
 		{
-			Point mousePos = GetPosition ();
+			Point mousePos = GetPosition();
 			CGPoint p = new CGPoint { X = mousePos.X, Y = mousePos.Y };
 			IntPtr click = CGEventCreateMouseEvent(
 				IntPtr.Zero, CGEventType.LeftMouseUp,
@@ -166,15 +176,15 @@ namespace StyrServer.Input
 			leftButtonDown = false;
 		}
 
-		public void LeftButtonClick ()
+		public void LeftButtonClick()
 		{
-			LeftButtonDown ();
-			LeftButtonUp ();
+			LeftButtonDown();
+			LeftButtonUp();
 		}
 
-		public void RightButtonDown ()
+		public void RightButtonDown()
 		{
-			Point mousePos = GetPosition ();
+			Point mousePos = GetPosition();
 			CGPoint p = new CGPoint { X = mousePos.X, Y = mousePos.Y };
 			IntPtr click = CGEventCreateMouseEvent(
 				IntPtr.Zero, CGEventType.RightMouseDown,
@@ -186,9 +196,9 @@ namespace StyrServer.Input
 			rightButtonDown = true;
 		}
 
-		public void RightButtonUp ()
+		public void RightButtonUp()
 		{
-			Point mousePos = GetPosition ();
+			Point mousePos = GetPosition();
 			CGPoint p = new CGPoint { X = mousePos.X, Y = mousePos.Y };
 			IntPtr click = CGEventCreateMouseEvent(
 				IntPtr.Zero, CGEventType.RightMouseUp,
@@ -200,15 +210,15 @@ namespace StyrServer.Input
 			rightButtonDown = false;
 		}
 
-		public void RightButtonClick ()
+		public void RightButtonClick()
 		{
-			RightButtonDown ();
-			RightButtonUp ();
+			RightButtonDown();
+			RightButtonUp();
 		}
 
 		public void Scroll(float x, float y)
 		{
-			var scroll = CGEventCreateScrollWheelEvent (
+			var scroll = CGEventCreateScrollWheelEvent(
 				IntPtr.Zero,
 				CGScrollEventUnit.kCGScrollEventUnitPixel,
 				2,

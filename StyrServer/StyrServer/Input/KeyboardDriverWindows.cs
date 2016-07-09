@@ -14,6 +14,7 @@ namespace StyrServer.Input
 			public SendInputEventType type;
 			public MouseKeybdhardwareInputUnion mkhi;
 		}
+
 		[StructLayout(LayoutKind.Explicit)]
 		struct MouseKeybdhardwareInputUnion
 		{
@@ -26,6 +27,7 @@ namespace StyrServer.Input
 			[FieldOffset(0)]
 			public HARDWAREINPUT hi;
 		}
+
 		[StructLayout(LayoutKind.Sequential)]
 		struct KEYBDINPUT
 		{
@@ -35,6 +37,7 @@ namespace StyrServer.Input
 			public uint time;
 			public IntPtr dwExtraInfo;
 		}
+
 		[Flags]
 		enum KeyboardEventFlags : uint
 		{
@@ -51,6 +54,7 @@ namespace StyrServer.Input
 			public short wParamL;
 			public short wParamH;
 		}
+
 		struct MouseInputData
 		{
 			public int dx;
@@ -60,6 +64,7 @@ namespace StyrServer.Input
 			public uint time;
 			public IntPtr dwExtraInfo;
 		}
+
 		[Flags]
 		enum MouseEventFlags : uint
 		{
@@ -77,6 +82,7 @@ namespace StyrServer.Input
 			MOUSEEVENTF_ABSOLUTE = 0x8000,
 			MOUSEEVENTF_HWHEEL = 0x01000
 		}
+
 		enum SendInputEventType : int
 		{
 			InputMouse,
@@ -84,7 +90,7 @@ namespace StyrServer.Input
 			InputHardware
 		}
 
-		public KeyboardDriverWindows ()
+		public KeyboardDriverWindows()
 		{
 			if (PlatformDetector.CurrentPlatform != PlatformID.Win32NT)
 			{
@@ -92,7 +98,7 @@ namespace StyrServer.Input
 			}
 		}
 
-		public void InputChar (char c)
+		public void InputChar(char c)
 		{
 			INPUT input = new INPUT();
 			input.type = SendInputEventType.InputKeyboard;
@@ -104,7 +110,7 @@ namespace StyrServer.Input
 			SendInput(1, ref input, Marshal.SizeOf(typeof(INPUT)));
 		}
 
-		public void KeyPress (KeyboardKey key)
+		public void KeyPress(KeyboardKey key)
 		{
 			INPUT[] input = new INPUT[2];
 

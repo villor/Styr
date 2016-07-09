@@ -23,186 +23,211 @@ namespace StyrServer
 
 		public bool Running { get; set; }
 
-		public Server (int port)
+		public Server(int port)
 		{
-			udpClient = new UdpClient (port);
-			groupEP = new IPEndPoint (IPAddress.Any, port);
+			udpClient = new UdpClient(port);
+			groupEP = new IPEndPoint(IPAddress.Any, port);
 
-			connectedClients = new List<Client> ();
-			ackedPackets = new List<AckedPacket> ();
+			connectedClients = new List<Client>();
+			ackedPackets = new List<AckedPacket>();
 
 			Running = true;
 
-			if (PlatformDetector.CurrentPlatform == PlatformID.Win32NT) {
+			if (PlatformDetector.CurrentPlatform == PlatformID.Win32NT)
+			{
 				mouse = new MouseDriverWindows();
-				keyboard = new KeyboardDriverWindows ();
+				keyboard = new KeyboardDriverWindows();
 			}
 			else {
 				mouse = new MouseDriverOSX();
-				keyboard = new KeyboardDriverOSX ();
+				keyboard = new KeyboardDriverOSX();
 			}
 
-			Thread mainThread = new Thread (ServerLoop);
-			mainThread.Start ();
-			Console.WriteLine ("Server running on port {0}", port);
+			Thread mainThread = new Thread(ServerLoop);
+			mainThread.Start();
+			Console.WriteLine("Server running on port {0}", port);
 		}
 
-		private void sendAck(ushort id) {
+		private void sendAck(ushort id)
+		{
 			byte[] ackPack = new byte[3];
 			ackPack[0] = (byte)PacketType.Ack;
-			PacketConverter.PutUShort (id, ackPack, 1);
+			PacketConverter.PutUShort(id, ackPack, 1);
 
-			udpClient.Send (ackPack, ackPack.Length, groupEP);
+			udpClient.Send(ackPack, ackPack.Length, groupEP);
 			ackedPackets.Add(new AckedPacket { ID = id, ElapsedTime = 0 });
 		}
 
 		private void ServerLoop()
 		{
 			byte[] receivedPacket;
-			Stopwatch sw = new Stopwatch ();
-			while (Running) {
-				if (udpClient.Available > 0) {
-					receivedPacket = udpClient.Receive (ref groupEP);
-					if (receivedPacket.Length > 0) {
-						switch (receivedPacket [0]) {
-						case (byte)PacketType.Discovery:
-							Debug.WriteLine ("Discovery received from {0}:{1}", groupEP.Address, groupEP.Port);
-							byte[] UTF8HostName = Encoding.UTF8.GetBytes (Dns.GetHostName ());
-							byte[] offer = new byte[7 + UTF8HostName.Length];
+			Stopwatch sw = new Stopwatch();
+			while (Running)
+			{
+				if (udpClient.Available > 0)
+				{
+					receivedPacket = udpClient.Receive(ref groupEP);
+					if (receivedPacket.Length > 0)
+					{
+						switch (receivedPacket[0])
+						{
+							case (byte)PacketType.Discovery:
+								Debug.WriteLine("Discovery received from {0}:{1}", groupEP.Address, groupEP.Port);
+								byte[] UTF8HostName = Encoding.UTF8.GetBytes(Dns.GetHostName());
+								byte[] offer = new byte[7 + UTF8HostName.Length];
 
-							offer [0] = (byte)PacketType.Offer;
-							PacketConverter.PutUShort ((ushort)PlatformDetector.CurrentPlatform, offer, 1);
-							PacketConverter.PutUShort ((ushort)UTF8HostName.Length, offer, 3);
-							Array.Copy (UTF8HostName, 0, offer, 5, UTF8HostName.Length);
+								offer[0] = (byte)PacketType.Offer;
+								PacketConverter.PutUShort((ushort)PlatformDetector.CurrentPlatform, offer, 1);
+								PacketConverter.PutUShort((ushort)UTF8HostName.Length, offer, 3);
+								Array.Copy(UTF8HostName, 0, offer, 5, UTF8HostName.Length);
 
-							udpClient.Send (offer, offer.Length, groupEP);
-							break;
+								udpClient.Send(offer, offer.Length, groupEP);
+								break;
 
-						case (byte)PacketType.Connection:
-							if (receivedPacket.Length == 1)
-							{
-								if (!connectedClients.Exists(p => p.EndPoint.Equals(groupEP)))
+							case (byte)PacketType.Connection:
+								if (receivedPacket.Length == 1)
 								{
-									connectedClients.Add(new Client(groupEP));
-									Debug.WriteLine("Client connected: {0}:{1}", groupEP.Address, groupEP.Port);
+									if (!connectedClients.Exists(p => p.EndPoint.Equals(groupEP)))
+									{
+										connectedClients.Add(new Client(groupEP));
+										Debug.WriteLine("Client connected: {0}:{1}", groupEP.Address, groupEP.Port);
+									}
+									sendAck(0);
 								}
-								sendAck(0);
-							}
-							break;
+								break;
 
-						case (byte)PacketType.Ping:
-							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
-								ushort id = PacketConverter.GetUShort(receivedPacket, 1);
-								connectedClients.Find (p => p.EndPoint.Equals (groupEP)).TimeSinceLastPing = TimeSpan.Zero;
-								sendAck (id);
-							}
-							break;
-
-						case (byte)PacketType.MouseMovement:
-							if (connectedClients.Exists (p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 9) {
-								mouse.RelativeMove (PacketConverter.GetFloat(receivedPacket, 1), PacketConverter.GetFloat(receivedPacket, 5));
-							}
-							break;
-
-						case (byte)PacketType.MouseScroll:
-							if (connectedClients.Exists (p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 9) {
-								mouse.Scroll (PacketConverter.GetFloat(receivedPacket, 1), PacketConverter.GetFloat(receivedPacket, 5));
-							}
-							break;
-
-						case (byte)PacketType.MouseLeftClick:
-							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
-								ushort id = PacketConverter.GetUShort(receivedPacket, 1);
-								if (!ackedPackets.Exists (p => p.ID == id)) {
-									Debug.WriteLine ("LeftClick!");
-									mouse.LeftButtonClick ();
+							case (byte)PacketType.Ping:
+								if (connectedClients.Exists(p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 3)
+								{
+									ushort id = PacketConverter.GetUShort(receivedPacket, 1);
+									connectedClients.Find(p => p.EndPoint.Equals(groupEP)).TimeSinceLastPing = TimeSpan.Zero;
+									sendAck(id);
 								}
-								sendAck (id);
-							}
-							break;
+								break;
 
-						case (byte)PacketType.MouseLeftDown:
-							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
-								ushort id = PacketConverter.GetUShort (receivedPacket, 1);
-								if (!ackedPackets.Exists (p => p.ID == id)) {
-									Debug.WriteLine ("LeftDown!");
-									mouse.LeftButtonDown ();
+							case (byte)PacketType.MouseMovement:
+								if (connectedClients.Exists(p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 9)
+								{
+									mouse.RelativeMove(PacketConverter.GetFloat(receivedPacket, 1), PacketConverter.GetFloat(receivedPacket, 5));
 								}
-								sendAck (id);
-							}
-							break;
+								break;
 
-						case (byte)PacketType.MouseLeftUp:
-							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
-								ushort id = PacketConverter.GetUShort (receivedPacket, 1);
-								if (!ackedPackets.Exists (p => p.ID == id)) {
-									Debug.WriteLine ("LeftUp!");
-									mouse.LeftButtonUp ();
+							case (byte)PacketType.MouseScroll:
+								if (connectedClients.Exists(p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 9)
+								{
+									mouse.Scroll(PacketConverter.GetFloat(receivedPacket, 1), PacketConverter.GetFloat(receivedPacket, 5));
 								}
-								sendAck (id);
-							}
-							break;
+								break;
 
-						case (byte)PacketType.MouseRightClick:
-							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 3) {
-								ushort id = PacketConverter.GetUShort(receivedPacket, 1);
-								if (!ackedPackets.Exists (p => p.ID == id)) {
-									Debug.WriteLine ("RightClick!");
-									mouse.RightButtonClick ();
+							case (byte)PacketType.MouseLeftClick:
+								if (connectedClients.Exists(p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 3)
+								{
+									ushort id = PacketConverter.GetUShort(receivedPacket, 1);
+									if (!ackedPackets.Exists(p => p.ID == id))
+									{
+										Debug.WriteLine("LeftClick!");
+										mouse.LeftButtonClick();
+									}
+									sendAck(id);
 								}
-								sendAck (id);
-							}
-							break;
+								break;
 
-						case (byte)PacketType.InputCharacter:
-							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 5) {
-								ushort id = PacketConverter.GetUShort(receivedPacket, 3);
-								if (!ackedPackets.Exists (p => p.ID == id)) {
-									char inputc = PacketConverter.GetChar (receivedPacket, 1);
-									Debug.WriteLine ("InputCharacter: '" + inputc + "'");
-									keyboard.InputChar (inputc);
+							case (byte)PacketType.MouseLeftDown:
+								if (connectedClients.Exists(p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 3)
+								{
+									ushort id = PacketConverter.GetUShort(receivedPacket, 1);
+									if (!ackedPackets.Exists(p => p.ID == id))
+									{
+										Debug.WriteLine("LeftDown!");
+										mouse.LeftButtonDown();
+									}
+									sendAck(id);
 								}
-								sendAck (id);
-							}
-							break;
+								break;
 
-						case (byte)PacketType.KeyPress:
-							if (connectedClients.Exists (p => p.EndPoint.Equals (groupEP)) && receivedPacket.Length == 4) {
-								ushort id = PacketConverter.GetUShort(receivedPacket, 2);
-								if (!ackedPackets.Exists (p => p.ID == id)) {
-									Debug.WriteLine ("KeyPress: '" + Enum.GetName(typeof(KeyboardKey), (KeyboardKey)receivedPacket[1]) + "'");
-									keyboard.KeyPress ((KeyboardKey)receivedPacket [1]);
+							case (byte)PacketType.MouseLeftUp:
+								if (connectedClients.Exists(p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 3)
+								{
+									ushort id = PacketConverter.GetUShort(receivedPacket, 1);
+									if (!ackedPackets.Exists(p => p.ID == id))
+									{
+										Debug.WriteLine("LeftUp!");
+										mouse.LeftButtonUp();
+									}
+									sendAck(id);
 								}
-								sendAck (id);
-							}
-							break;
+								break;
 
-						default:
-							Debug.WriteLine ("Unknown packet received from {0}:\n0x{1}", groupEP.Address, BitConverter.ToString (receivedPacket).Replace ("-", string.Empty));
-							break;
+							case (byte)PacketType.MouseRightClick:
+								if (connectedClients.Exists(p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 3)
+								{
+									ushort id = PacketConverter.GetUShort(receivedPacket, 1);
+									if (!ackedPackets.Exists(p => p.ID == id))
+									{
+										Debug.WriteLine("RightClick!");
+										mouse.RightButtonClick();
+									}
+									sendAck(id);
+								}
+								break;
+
+							case (byte)PacketType.InputCharacter:
+								if (connectedClients.Exists(p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 5)
+								{
+									ushort id = PacketConverter.GetUShort(receivedPacket, 3);
+									if (!ackedPackets.Exists(p => p.ID == id))
+									{
+										char inputc = PacketConverter.GetChar(receivedPacket, 1);
+										Debug.WriteLine("InputCharacter: '" + inputc + "'");
+										keyboard.InputChar(inputc);
+									}
+									sendAck(id);
+								}
+								break;
+
+							case (byte)PacketType.KeyPress:
+								if (connectedClients.Exists(p => p.EndPoint.Equals(groupEP)) && receivedPacket.Length == 4)
+								{
+									ushort id = PacketConverter.GetUShort(receivedPacket, 2);
+									if (!ackedPackets.Exists(p => p.ID == id))
+									{
+										Debug.WriteLine("KeyPress: '" + Enum.GetName(typeof(KeyboardKey), (KeyboardKey)receivedPacket[1]) + "'");
+										keyboard.KeyPress((KeyboardKey)receivedPacket[1]);
+									}
+									sendAck(id);
+								}
+								break;
+
+							default:
+								Debug.WriteLine("Unknown packet received from {0}:\n0x{1}", groupEP.Address, BitConverter.ToString(receivedPacket).Replace("-", string.Empty));
+								break;
 						}
 					}
 				}
 
-				sw.Stop ();
-				for (int i = ackedPackets.Count - 1; i >= 0; i--) {
+				sw.Stop();
+				for (int i = ackedPackets.Count - 1; i >= 0; i--)
+				{
 					ackedPackets[i].ElapsedTime += sw.Elapsed.TotalMilliseconds;
-					if (ackedPackets[i].ElapsedTime > 1000) {
-						ackedPackets.RemoveAt (i);
+					if (ackedPackets[i].ElapsedTime > 1000)
+					{
+						ackedPackets.RemoveAt(i);
 					}
 				}
-				for (int i = connectedClients.Count - 1; i >= 0; i--) {
+				for (int i = connectedClients.Count - 1; i >= 0; i--)
+				{
 					connectedClients[i].TimeSinceLastPing += sw.Elapsed;
-					if (connectedClients[i].TimeSinceLastPing.TotalMilliseconds > 5000) {
-						Debug.WriteLine ("Client timed out and was disconnected (" + connectedClients [i].IP.ToString () + ")");
-						connectedClients.RemoveAt (i);
+					if (connectedClients[i].TimeSinceLastPing.TotalMilliseconds > 5000)
+					{
+						Debug.WriteLine("Client timed out and was disconnected (" + connectedClients[i].IP.ToString() + ")");
+						connectedClients.RemoveAt(i);
 					}
 				}
-				sw.Restart ();
+				sw.Restart();
 
-				Thread.Sleep (1);
+				Thread.Sleep(1);
 			}
-			udpClient.Close ();
+			udpClient.Close();
 		}
 	}
 }
