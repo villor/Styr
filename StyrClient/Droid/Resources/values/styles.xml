@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <style name="StyrTheme" parent="android:Theme.Material.Light.DarkActionBar">
+		<item name="android:actionBarStyle">@style/StyrTheme_ActionBar</item>
+		<item name="android:actionBarSize">56dp</item>
+    </style>
+
+    <style name="StyrTheme_ActionBar" parent="android:Widget.Holo.ActionBar.Solid">
+		<item name="android:icon">@android:color/transparent</item>
+		<item name="android:titleTextStyle">@style/StyrTheme_ActionBar_Title</item>
+		<item name="android:background">@color/primary</item>
+	</style>
+
+	<style name="StyrTheme_ActionBar_Title" parent="android:TextAppearance.Holo.Widget.ActionBar.Title">
+		<item name="android:textColor">@color/icons</item>
+		<item name="android:textSize">20sp</item>
+	</style>
+</resources>
