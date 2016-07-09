@@ -66,10 +66,9 @@ namespace StyrClient
 				}
 			};
 
-			ToolbarItems.Add(new ToolbarItem("+", null,  async () => {
+			ToolbarItems.Add(new ToolbarItem("+", null, () => {
 				if (!IpConnectField.IsVisible){
 					IpConnectField.IsVisible = true;
-
 				} else {
 					IpConnectField.IsVisible = false;
 
@@ -79,7 +78,6 @@ namespace StyrClient
 			Placeholder = new Label
 			{
 				Text = "There seem to be no available servers in your network.",
-				IsVisible = true,
 				HorizontalTextAlignment = TextAlignment.Center,
 				FontSize = 18
 
@@ -88,12 +86,14 @@ namespace StyrClient
 			PlaceholderLayout = new StackLayout
 			{
 				Padding = 10,
+				VerticalOptions = LayoutOptions.CenterAndExpand,
 				Children = {
 					Placeholder
 				}
 			};
-				
-			ServerListView = new ListView {
+
+			ServerListView = new ListView
+			{
 				HasUnevenRows = true,
 				RowHeight = 120,
 				ItemsSource = AvailableHosts,
@@ -143,8 +143,10 @@ namespace StyrClient
 				openMainRemotePage(serverItem.EndPoint);
 			};
 
-			ServerScrollView = new ScrollView {
-				Content = ServerListView
+			ServerScrollView = new ScrollView
+			{
+				Content = ServerListView,
+				IsVisible = false
 			};
 
 			Content = new StackLayout {
@@ -179,7 +181,8 @@ namespace StyrClient
 
 		private void ServerListViewChanged() 
 		{
-			Placeholder.IsVisible = AvailableHosts.Count == 0;			
+			PlaceholderLayout.IsVisible = AvailableHosts.Count == 0;
+			ServerScrollView.IsVisible = !(AvailableHosts.Count == 0);
 		}
 	}
 }
