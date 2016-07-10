@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Threading;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace StyrClient.Network
 {
+
 	public class Discovery
 	{
-		private ObservableCollection<StyrServer> discoveredServers;
+		private ObservableServerCollection<StyrServer> discoveredServers;
 		private IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Broadcast, 1337);
 		private UdpClient udpClient = new UdpClient();
 
-		public Discovery(ObservableCollection<StyrServer> servers)
+		public Discovery(ObservableServerCollection<StyrServer> servers)
 		{
 			discoveredServers = servers;
 		}
@@ -25,7 +24,7 @@ namespace StyrClient.Network
 		{
 			return Task.Run(() =>
 			{
-
+				Debug.WriteLine(string.Format("Discovered servers: {0}", discoveredServers.InnerCollection.Count));
 				byte[] packet = { (byte)PacketType.Discovery };
 				udpClient.Send(packet, packet.Length, remoteEndPoint);
 
@@ -41,7 +40,7 @@ namespace StyrClient.Network
 						if (receivedData[0] == (byte)PacketType.Offer)
 						{
 							bool duplicate = false;
-							foreach (StyrServer ss in discoveredServers)
+							foreach (StyrServer ss in discoveredServers.InnerCollection)
 							{
 								if (ep.Equals(ss.EndPoint))
 								{
@@ -62,7 +61,7 @@ namespace StyrClient.Network
 				}
 
 				// Clear list of dead servers
-				var tempList = new List<StyrServer>(discoveredServers);
+				var tempList = new List<StyrServer>(discoveredServers.InnerCollection);
 				foreach (StyrServer ss in tempList)
 				{
 					bool matchFound = false;
@@ -87,6 +86,44 @@ namespace StyrClient.Network
 					}
 				}
 			});
+		}
+
+	}
+
+	public class ObservableServerCollection<T>
+	{
+		public ObservableCollection<T> InnerCollection;
+
+		public event EventHandler CollectionChanged;
+
+		public ObservableServerCollection(ObservableCollection<T> collection) 
+		{
+			InnerCollection = collection;
+		}
+
+		public ObservableServerCollection()
+		{
+			InnerCollection = new ObservableCollection<T>();
+		}
+
+		public void Add(T item)
+		{
+			InnerCollection.Add(item);
+			FireCollectionChanged(EventArgs.Empty);
+		}
+
+		public void Remove(T item) 
+		{
+			InnerCollection.Remove(item);
+			FireCollectionChanged(EventArgs.Empty);
+		}
+
+		public void FireCollectionChanged(EventArgs e) 
+		{
+			if (CollectionChanged != null)
+			{
+				CollectionChanged(this, e);
+			}
 		}
 	}
 }

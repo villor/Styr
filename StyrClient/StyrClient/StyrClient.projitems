@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MainRemotePage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StyrClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TouchPad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputPopUp.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Network\" />

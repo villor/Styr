@@ -9,22 +9,24 @@ using System.Collections.ObjectModel;
 using StyrClient.Network;
 using System.Threading.Tasks;
 
+
 namespace StyrClient
 {
 
 	public class DiscoveryPage : ContentPage
 	{
-		private ObservableCollection<StyrServer> AvailableHosts;
+		private ObservableServerCollection<StyrServer> AvailableHosts;
 		private CancellationTokenSource cts;
 		private StackLayout PlaceholderLayout;
 		private Label Placeholder;
 		private ListView ServerListView;
 		private ScrollView ServerScrollView;
-		private Entry IpConnectField;
+		private Discovery discovery;
 
 		public DiscoveryPage ()
 		{
-			AvailableHosts = new ObservableCollection<StyrServer> ();
+			AvailableHosts = new ObservableServerCollection<StyrServer> ();
+			discovery = new Discovery(AvailableHosts);
 			cts = new CancellationTokenSource ();
 			BuildPageGUI ();
 		}
@@ -33,7 +35,7 @@ namespace StyrClient
 		{
 			base.OnAppearing ();
 			Debug.WriteLine ("DiscoveryPage active");
-			AvailableHosts.Clear ();
+			AvailableHosts.InnerCollection.Clear ();
 			if (cts != null) {
 				cts.Cancel ();
 				cts.Dispose ();
@@ -44,7 +46,6 @@ namespace StyrClient
 
 		private async Task discoverHosts()
 		{
-			Discovery discovery = new Discovery (AvailableHosts);
 			await RepeatActionEvery (() => discovery.DiscoverHostsAsync (), TimeSpan.FromSeconds (2), cts.Token);
 			Debug.WriteLine("Discovery is finished");
 
@@ -54,26 +55,43 @@ namespace StyrClient
 		{
 			Title = "Available Hosts";
 
-			IpConnectField = new Entry { Placeholder = "IP Address" };
-			IpConnectField.IsVisible = false;
-			IpConnectField.Completed += (sender, e) => {
-				try {
-					openMainRemotePage (new IPEndPoint (IPAddress.Parse(IpConnectField.Text), 1337));
-				} catch (FormatException) {
-					DisplayAlert("Incorrect Address", "Check format of IP Address", "OK");
-				} catch (Exception) {
-					DisplayAlert("Error", "Could not connect to remote host", "OK");
+			var puArgs = new InputPopUpArgs
+			{
+				Title = "Connect Manually",
+				Placeholder = "Enter IP or hostname",
+				ButtonText = "Connect"
+			};
+			puArgs.OnSubmit = async (s) => 
+			{
+				try
+				{
+					await Navigation.PopModalAsync(true);
+					openMainRemotePage(new IPEndPoint(IPAddress.Parse(s), 1337));
+				}
+				catch (FormatException)
+				{
+					await DisplayAlert("Incorrect Address", "Check format of IP Address", "OK");
+				}
+				catch (Exception)
+				{
+					await DisplayAlert("Error", "Could not connect to remote host", "OK");
 				}
 			};
 
-			ToolbarItems.Add(new ToolbarItem("+", null, () => {
-				if (!IpConnectField.IsVisible){
-					IpConnectField.IsVisible = true;
-				} else {
-					IpConnectField.IsVisible = false;
+			var popup = new InputPopUp(puArgs);
 
-				}
-			}));
+			var IpConnectItem = new ToolbarItem
+			{
+				Text = "Connect by IP/Host",
+				Order = ToolbarItemOrder.Secondary
+			};
+			IpConnectItem.Clicked += async (sender, e) =>
+			{
+				await Navigation.PushModalAsync(new NavigationPage(popup));
+				Debug.WriteLine("Pushed");
+			};
+
+			ToolbarItems.Add(IpConnectItem);
 
 			Placeholder = new Label
 			{
@@ -96,7 +114,7 @@ namespace StyrClient
 			{
 				HasUnevenRows = true,
 				RowHeight = 120,
-				ItemsSource = AvailableHosts,
+				ItemsSource = AvailableHosts.InnerCollection,
 				ItemTemplate = new DataTemplate (() => {
 					// Create views with bindings for displaying each property.
 					Label nameLabel = new Label ();
@@ -134,8 +152,7 @@ namespace StyrClient
 				})
 			};
 
-			ServerListView.ChildAdded += (sender, e) => ServerListViewChanged();
-			ServerListView.ChildRemoved += (sender, e) => ServerListViewChanged();
+			AvailableHosts.CollectionChanged += (sender, e) => ServerListViewChanged();
 
 			ServerListView.ItemTapped += (sender, e) => {
 				var serverItem = (StyrServer)e.Item;
@@ -149,9 +166,9 @@ namespace StyrClient
 				IsVisible = false
 			};
 
-			Content = new StackLayout {
+			Content = new StackLayout
+			{
 				Children = {
-					IpConnectField,
 					PlaceholderLayout,
 					ServerScrollView
 				}
@@ -181,8 +198,10 @@ namespace StyrClient
 
 		private void ServerListViewChanged() 
 		{
-			PlaceholderLayout.IsVisible = AvailableHosts.Count == 0;
-			ServerScrollView.IsVisible = !(AvailableHosts.Count == 0);
+			Device.BeginInvokeOnMainThread(() => {
+				PlaceholderLayout.IsVisible = AvailableHosts.InnerCollection.Count == 0;
+				ServerScrollView.IsVisible = !(AvailableHosts.InnerCollection.Count == 0);
+			});
 		}
 	}
 }
