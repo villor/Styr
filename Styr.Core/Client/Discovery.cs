@@ -48,7 +48,7 @@ namespace Styr.Core.Client
 							}
 							if (!duplicate)
 							{
-								PlatformID platform = (PlatformID)PacketConverter.GetUShort(receivedData, 1);
+								Platform platform = (Platform)PacketConverter.GetUShort(receivedData, 1);
 								ushort nameLength = PacketConverter.GetUShort(receivedData, 3);
 								string serverName = PacketConverter.GetUTF8String(receivedData, 5, nameLength);
 								discoveredServers.Add(new Server(ep, serverName, platform));

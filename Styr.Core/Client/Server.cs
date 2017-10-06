@@ -37,7 +37,7 @@ namespace Styr.Core.Client
 		public ushort FailedDiscoveries { get; set; }
 		public string ImageSource { get; }
 
-		public Server(IPEndPoint endPoint, string serverName, PlatformID platform)
+		public Server(IPEndPoint endPoint, string serverName, Platform platform)
 		{
 			EndPoint = endPoint;
 			ServerName = serverName;
