@@ -5,7 +5,7 @@ namespace Styr.Core
 {
 	public static class PacketConverter
 	{
-		private static void FixEndianess(byte[] packet)
+		public static void FixEndianess(byte[] packet)
 		{
 			if (BitConverter.IsLittleEndian)
 			{
