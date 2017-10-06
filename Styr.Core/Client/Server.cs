@@ -7,7 +7,24 @@ namespace Styr.Core.Client
 	{
 		public IPEndPoint EndPoint { get; set; }
 		public string ServerName { get; set; }
-		public PlatformID Platform { get; set; }
+		public Platform Platform { get; set; }
+
+		public string PlatformImageSource
+		{
+			get
+			{
+				// TEMPORARY FIX
+				switch (Platform)
+				{
+					case Platform.Windows:
+						return "Win_Client100.png";
+					case Platform.MacOS:
+					case Platform.Other:
+					default:
+						return "Mac_Client100.png";
+				}
+			}
+		}
 
 		public string IP
 		{
