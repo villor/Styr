@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Styr</title>
+	<meta name="description" content="Simple and fast remote control app">
+	<meta name="author" content="Styr">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href='http://fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.min.css">
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+	<style>
+		.button {
+			border-radius: 100px;
+		}
+
+		.button.button-primary {
+			background-color: #F06733;
+			border-color: #F06733;
+		}
+
+		.button.button-primary:hover, .button.button-primary:focus {
+			background-color: #F36D3B;
+			border-color: #F36D3B;
+		}
+
+		.section {
+			padding: 8rem 0 7rem;
+			text-align: center;
+		}
+		.section-heading, .section-description {
+			margin-bottom: 1.2rem;
+		}
+
+		.features {
+			/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ff670f+0,ff330f+100 */
+background: #ff670f; /* Old browsers */
+background: -moz-linear-gradient(top,  #ff670f 0%, #ff330f 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top,  #ff670f 0%,#ff330f 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom,  #ff670f 0%,#ff330f 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff670f', endColorstr='#ff330f',GradientType=0 ); /* IE6-9 */
+
+			color: #fff;
+		}
+		.feature-multiplier {
+			margin-bottom: .5rem;
+		}
+		.feature-heading {
+			margin-bottom: .3rem;
+		}
+		.feature-description {
+			opacity: .8;
+			font-weight: 300;
+		}
+		.phone {
+			position: relative;
+			  max-width: 100%;
+			  margin: 1rem auto -16rem;
+		}
+
+		/* Help
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.get-help {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Categories
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.categories {
+  background: #ff670f; /* Old browsers */
+background: -moz-linear-gradient(top,  #ff670f 0%, #ff330f 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top,  #ff670f 0%,#ff330f 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom,  #ff670f 0%,#ff330f 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff670f', endColorstr='#ff330f',GradientType=0 ); /* IE6-9 */
+  color: #fff;
+}
+.categories .section-description { 
+  margin-bottom: 4rem;
+}
+
+@media (min-width: 550px) {
+  .section {
+    padding: 12rem 0 11rem;
+  }
+  .hero {
+    padding-bottom: 12rem;
+    text-align: left;
+    height: 165px;
+  }
+  .phone {
+    position: absolute;
+    top: -7rem;
+    right: 3rem;
+    max-height: 362px;
+    z-index: 3;
+  }
+  .hero-heading {
+    font-size: 2.4rem;
+  }
+}
+
+		@media (min-width: 750px) {
+		  .hero {
+		    height: 190px;
+		  }
+		  .hero-heading {
+		    font-size: 2.6rem;
+		  }
+		  .section {
+		    padding: 14rem 0 15rem;
+		  }
+		  .hero {
+		    padding: 16rem 0 14rem;
+		  }
+		  .section-description {
+    max-width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+		  .phone {
+		    top: -8rem;
+		    right: 0rem;
+		    max-height: 540px;
+		  }
+		  .categories {
+    padding: 15rem 0 8rem;
+  }
+		}
+
+		/* Bigger than 1000 */
+		@media (min-width: 1000px) {
+		  .section {
+		    padding: 20rem 0 19rem;
+		  }
+		  .hero {
+		    padding: 22rem 0;
+		  }
+		  .hero-heading {
+		    font-size: 3.0rem;
+		  }
+		  .phone {
+		    top: -24rem;
+		    max-height: 750px;
+		  }
+		}
+
+		.categories img {
+			border: 1px solid white;
+		}
+	</style>
+</head>
+<body>
+	<div class="section hero">
+		<div class="container">
+			<div class="row">
+				<div class="one-half column">
+					<h4 class="hero-heading">Stop running around in your house like a maniac. Control your PC using a smartphone.</h4>
+					<a href="https://play.google.com/store/apps/details?id=com.hungrybolo.remotemouseandroid" class="button button-primary">Try Styr</a>
+				</div>
+				<div class="one-half column">
+					<img class="phone" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Nexus_5_Front_View.png">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="section features">
+		<div class="container">
+			<div class="one-third column feature">
+				<h2 class="feature-multiplier">Fast</h2>
+				<p class="feature-description">By using a network protocl with low overhead there is almost no noticable delay.</p>
+			</div>
+			<div class="one-third column feature">
+				<h2 class="feature-multiplier">Simple</h2>
+				<p class="feature-description">Styr is design for ease of use and to be as minimal and simple as possible.</p>
+			</div>
+			<div class="one-third column feature">
+				<h2 class="feature-multiplier">Multi platform</h2>
+				<p class="feature-description">Styr supports all the major mobile platforms, including Android, iOS and Windows Phone.</p>
+			</div>
+		</div>
+	</div>
+	<div class="section get-help">
+    <div class="container">
+      <h3 class="section-heading">Free and open source</h3>
+      <p class="section-description">Styr is open sourced under the MIT license. If you want to contribute or just check out that beautiful code, visit us on GitHub!</p>
+      <a class="button button-primary" href="http://github.com">View Styr on GitHub</a>
+    </div>
+  </div>
+
+  <div class="section categories">
+    <div class="container">
+      <h3 class="section-heading">Who is behind Styr?</h3>
+      <p class="section-description">These spillevinks created Styr in a week.</p>
+      <div class="row">
+        <div class="one-half column category">
+          <img class="u-max-full-width" src="bonne.png">
+          <h5>Bonne</h5>
+        </div>
+        <div class="one-half column category">
+          <img class="u-max-full-width" src="vigge.png">
+          <h5>Vigge</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+	</body>
+</html>
