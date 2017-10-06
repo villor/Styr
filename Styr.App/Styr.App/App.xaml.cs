@@ -1,34 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 
 namespace Styr.App
 {
+	public delegate void OnLifeCycleEventHandler();
+
 	public partial class App : Application
 	{
-		public App ()
+		public event OnLifeCycleEventHandler Sleep;
+		public event OnLifeCycleEventHandler Resume;
+
+		public App()
 		{
 			InitializeComponent();
-
-			MainPage = new Styr.App.MainPage();
+			MainPage = new NavigationPage(new DiscoveryPage());
 		}
 
-		protected override void OnStart ()
-		{
-			// Handle when your app starts
-		}
-
-		protected override void OnSleep ()
-		{
-			// Handle when your app sleeps
-		}
-
-		protected override void OnResume ()
-		{
-			// Handle when your app resumes
-		}
+		protected override void OnStart() { }
+		protected override void OnSleep() => Sleep?.Invoke();
+		protected override void OnResume() => Resume?.Invoke();
 	}
 }
